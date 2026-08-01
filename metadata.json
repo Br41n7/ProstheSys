@@ -1,0 +1,6 @@
+{
+  "name": "ProstheSys AI",
+  "description": "AI-powered Prosthetics & Orthotics Clinic Management Platform with digitized clinical workflows, AI SOAP generator, device recommendations, gait analysis, fabrication tracking, and telehealth.",
+  "requestFramePermissions": ["camera", "microphone"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
