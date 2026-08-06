@@ -9,14 +9,19 @@ import {
   ChevronDown,
   X,
   Check,
-  Menu
+  Menu,
+  LogOut,
+  User,
+  ShieldCheck
 } from 'lucide-react';
 
 import { AuthUser } from '../types/auth';
 
 interface HeaderProps {
-  authUser?: AuthUser;
+  authUser?: AuthUser | null;
   onOpenAuthModal?: () => void;
+  onOpenLandingPage?: () => void;
+  onSignOut?: () => void;
   userRole?: UserRole;
   currentRole?: UserRole;
   onRoleChange?: (role: UserRole) => void;
@@ -47,6 +52,8 @@ const ALL_ROLES: UserRole[] = [
 export const Header: React.FC<HeaderProps> = ({
   authUser,
   onOpenAuthModal,
+  onOpenLandingPage,
+  onSignOut,
   userRole,
   currentRole,
   onRoleChange,
@@ -66,6 +73,7 @@ export const Header: React.FC<HeaderProps> = ({
   const activeRole = currentRole || userRole || 'Prosthetist';
   const [showNotifications, setShowNotifications] = useState(false);
   const [showRoleDropdown, setShowRoleDropdown] = useState(false);
+  const [showUserDropdown, setShowUserDropdown] = useState(false);
   const [localSearch, setLocalSearch] = useState(searchQuery);
 
   const safeNotifications = notifications || [];
@@ -98,12 +106,27 @@ export const Header: React.FC<HeaderProps> = ({
         )}
 
         <div className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm truncate">
-          <span className="text-slate-500 font-medium hidden sm:inline">ProstheSys</span>
+          <button
+            onClick={onOpenLandingPage}
+            className="text-slate-500 hover:text-blue-600 font-semibold hidden sm:inline transition-colors hover:underline"
+            title="Return to Landing Page Overview"
+          >
+            ProstheSys AI
+          </button>
           <span className="text-slate-300 hidden sm:inline">/</span>
           <span className="font-semibold text-slate-900 capitalize truncate">
             {activeTab.replace('-', ' ')}
           </span>
         </div>
+
+        {onOpenLandingPage && (
+          <button
+            onClick={onOpenLandingPage}
+            className="hidden xl:flex items-center gap-1 px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-semibold border border-slate-200/80 transition-colors"
+          >
+            Landing Overview
+          </button>
+        )}
 
         {clinics && clinics.length > 0 && (
           <div className="hidden lg:flex items-center gap-2 px-3 py-1.5 bg-slate-100 rounded-lg border border-slate-200 text-xs text-slate-700">
@@ -181,22 +204,71 @@ export const Header: React.FC<HeaderProps> = ({
         {/* Auth Profile & Role Switcher */}
         <div className="flex items-center gap-2">
           {authUser ? (
-            <button
-              onClick={onOpenAuthModal}
-              className="flex items-center gap-2 px-2.5 py-1 bg-slate-100 hover:bg-slate-200/80 text-slate-800 rounded-xl text-xs font-semibold border border-slate-200/80 transition-all shadow-2xs"
-              title="Click to switch account or manage authentication"
-            >
-              <img
-                src={authUser.avatar}
-                alt={authUser.name}
-                className="w-6 h-6 rounded-full object-cover border border-slate-300 shrink-0"
-              />
-              <div className="hidden md:block text-left">
-                <p className="text-[11px] font-bold text-slate-900 leading-tight max-w-[110px] truncate">{authUser.name}</p>
-                <p className="text-[9px] text-blue-600 font-bold tracking-tight">{authUser.role}</p>
-              </div>
-              <ChevronDown className="w-3 h-3 text-slate-400" />
-            </button>
+            <div className="relative">
+              <button
+                onClick={() => setShowUserDropdown(!showUserDropdown)}
+                className="flex items-center gap-2 px-2.5 py-1 bg-slate-100 hover:bg-slate-200/80 text-slate-800 rounded-xl text-xs font-semibold border border-slate-200/80 transition-all shadow-2xs"
+                title="Account options"
+              >
+                <img
+                  src={authUser.avatar}
+                  alt={authUser.name}
+                  className="w-6 h-6 rounded-full object-cover border border-slate-300 shrink-0"
+                />
+                <div className="hidden md:block text-left">
+                  <p className="text-[11px] font-bold text-slate-900 leading-tight max-w-[110px] truncate">{authUser.name}</p>
+                  <p className="text-[9px] text-blue-600 font-bold tracking-tight">{authUser.role}</p>
+                </div>
+                <ChevronDown className="w-3 h-3 text-slate-400" />
+              </button>
+
+              {showUserDropdown && (
+                <div className="absolute right-0 mt-2 w-64 bg-white border border-slate-200 rounded-2xl shadow-xl py-2 z-50 animate-in fade-in slide-in-from-top-2">
+                  <div className="px-3.5 py-2 border-b border-slate-100 flex items-center gap-3">
+                    <img
+                      src={authUser.avatar}
+                      alt={authUser.name}
+                      className="w-9 h-9 rounded-full object-cover border border-slate-200 shrink-0"
+                    />
+                    <div className="min-w-0 flex-1">
+                      <p className="text-xs font-bold text-slate-900 truncate">{authUser.name}</p>
+                      <p className="text-[10px] text-slate-500 truncate">{authUser.email}</p>
+                      <span className="inline-block mt-0.5 px-2 py-0.5 text-[9px] font-bold bg-blue-50 text-blue-700 rounded-md border border-blue-200">
+                        {authUser.role}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="px-1 py-1 space-y-0.5">
+                    {onOpenAuthModal && (
+                      <button
+                        onClick={() => {
+                          setShowUserDropdown(false);
+                          onOpenAuthModal();
+                        }}
+                        className="w-full text-left px-3 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50 hover:text-blue-600 rounded-lg flex items-center gap-2 transition-colors"
+                      >
+                        <UserCheck className="w-4 h-4 text-blue-600" />
+                        <span>Switch Account / Role</span>
+                      </button>
+                    )}
+
+                    {onSignOut && (
+                      <button
+                        onClick={() => {
+                          setShowUserDropdown(false);
+                          onSignOut();
+                        }}
+                        className="w-full text-left px-3 py-2 text-xs font-semibold text-rose-600 hover:bg-rose-50 rounded-lg flex items-center gap-2 transition-colors"
+                      >
+                        <LogOut className="w-4 h-4 text-rose-600" />
+                        <span>Sign Out</span>
+                      </button>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
           ) : (
             <button
               onClick={onOpenAuthModal}

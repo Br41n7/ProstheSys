@@ -76,8 +76,8 @@ export const BillingView: React.FC<BillingViewProps> = ({ invoices = [] }) => {
               </div>
             </div>
 
-            <div className="border border-slate-200 rounded-xl overflow-hidden text-xs">
-              <table className="w-full text-left">
+            <div className="border border-slate-200 rounded-xl overflow-x-auto text-xs">
+              <table className="w-full min-w-[450px] text-left">
                 <thead className="bg-slate-50 text-slate-700 font-bold border-b border-slate-200">
                   <tr>
                     <th className="p-2.5">HCPCS Code</th>

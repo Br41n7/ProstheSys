@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ShieldCheck, UserCheck, Key, UserPlus, LogIn, Lock, CheckCircle2, Building2, User, X } from 'lucide-react';
+import { ShieldCheck, UserCheck, Key, UserPlus, LogIn, Lock, CheckCircle2, Building2, User, X, LogOut } from 'lucide-react';
 import { AuthUser, PRESET_USERS } from '../../types/auth';
 import { UserRole } from '../../types';
 
@@ -9,6 +9,7 @@ interface AuthModalProps {
   currentUser: AuthUser | null;
   onLogin: (user: AuthUser) => void;
   onSignUp: (newUser: AuthUser) => void;
+  onSignOut?: () => void;
 }
 
 export const AuthModal: React.FC<AuthModalProps> = ({
@@ -16,7 +17,8 @@ export const AuthModal: React.FC<AuthModalProps> = ({
   onClose,
   currentUser,
   onLogin,
-  onSignUp
+  onSignUp,
+  onSignOut
 }) => {
   const [activeTab, setActiveTab] = useState<'preset' | 'login' | 'signup'>('preset');
   
@@ -168,6 +170,39 @@ export const AuthModal: React.FC<AuthModalProps> = ({
 
         {/* Modal Content */}
         <div className="p-6 overflow-y-auto flex-1 space-y-4">
+
+          {/* Current Signed-In Session Banner */}
+          {currentUser && (
+            <div className="p-3.5 bg-slate-900 text-white rounded-2xl flex items-center justify-between gap-3 shadow-md border border-slate-800">
+              <div className="flex items-center gap-3 min-w-0">
+                <img
+                  src={currentUser.avatar}
+                  alt={currentUser.name}
+                  className="w-10 h-10 rounded-full object-cover border border-slate-700 shrink-0"
+                />
+                <div className="min-w-0">
+                  <p className="text-xs font-bold text-white truncate">{currentUser.name}</p>
+                  <p className="text-[10px] text-slate-400 truncate">{currentUser.email}</p>
+                  <span className="inline-block mt-0.5 px-2 py-0.2 text-[9px] font-bold bg-blue-500/20 text-blue-300 rounded border border-blue-500/30">
+                    Active: {currentUser.role}
+                  </span>
+                </div>
+              </div>
+
+              {onSignOut && (
+                <button
+                  onClick={() => {
+                    onSignOut();
+                    onClose();
+                  }}
+                  className="px-3 py-1.5 bg-rose-600 hover:bg-rose-500 text-white text-xs font-semibold rounded-xl transition-all shadow-xs flex items-center gap-1.5 shrink-0"
+                >
+                  <LogOut className="w-3.5 h-3.5" />
+                  <span>Sign Out</span>
+                </button>
+              )}
+            </div>
+          )}
 
           {/* TAB 1: PRESET ROLE PROFILES */}
           {activeTab === 'preset' && (

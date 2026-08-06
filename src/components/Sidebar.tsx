@@ -41,7 +41,8 @@ export type ActiveTab =
   | 'reports'
   | 'database';
 
-import { ROLE_PERMISSIONS } from '../types/auth';
+import { AuthUser, ROLE_PERMISSIONS } from '../types/auth';
+import { LogOut } from 'lucide-react';
 
 interface SidebarProps {
   activeTab: string;
@@ -51,6 +52,8 @@ interface SidebarProps {
   selectedPatient?: Patient | null;
   isOpenMobile?: boolean;
   onCloseMobile?: () => void;
+  authUser?: AuthUser | null;
+  onSignOut?: () => void;
 }
 
 const PRIMARY_MENU_ITEMS = [
@@ -82,7 +85,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
   userRole = 'Prosthetist',
   selectedPatient,
   isOpenMobile = false,
-  onCloseMobile
+  onCloseMobile,
+  authUser,
+  onSignOut
 }) => {
   const allowedTabs = ROLE_PERMISSIONS[userRole] || ROLE_PERMISSIONS.Prosthetist;
 
@@ -218,16 +223,41 @@ export const Sidebar: React.FC<SidebarProps> = ({
         )}
       </nav>
 
-      {/* Sidebar Footer User Info */}
+      {/* Sidebar Footer User Info & Sign Out */}
       <div className="p-4 border-t border-slate-800 bg-slate-900/60">
-        <div className="flex items-center gap-3">
-          <div className="h-9 w-9 rounded-full bg-slate-700 flex items-center justify-center text-xs font-bold text-slate-200 border border-slate-600">
-            MV
+        <div className="flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2.5 min-w-0">
+            {authUser?.avatar ? (
+              <img
+                src={authUser.avatar}
+                alt={authUser.name}
+                className="h-9 w-9 rounded-full object-cover border border-slate-700 shrink-0"
+              />
+            ) : (
+              <div className="h-9 w-9 rounded-full bg-slate-700 flex items-center justify-center text-xs font-bold text-slate-200 border border-slate-600 shrink-0">
+                {authUser?.name ? authUser.name.slice(0, 2).toUpperCase() : 'PS'}
+              </div>
+            )}
+            <div className="flex flex-col min-w-0">
+              <span className="text-xs font-semibold text-white truncate">
+                {authUser?.name || 'Dr. Marcus Vance'}
+              </span>
+              <span className="text-[10px] text-slate-400 truncate">
+                {authUser?.role || userRole}
+              </span>
+            </div>
           </div>
-          <div className="flex flex-col overflow-hidden">
-            <span className="text-xs font-semibold text-white truncate">Dr. Marcus Vance</span>
-            <span className="text-[10px] text-slate-400 truncate">{userRole}</span>
-          </div>
+
+          {onSignOut && (
+            <button
+              onClick={onSignOut}
+              className="p-2 text-slate-400 hover:text-rose-400 hover:bg-slate-800/80 rounded-lg transition-colors shrink-0"
+              title="Sign Out of Session"
+              aria-label="Sign Out"
+            >
+              <LogOut className="w-4 h-4" />
+            </button>
+          )}
         </div>
       </div>
     </aside>

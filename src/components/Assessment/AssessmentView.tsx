@@ -270,8 +270,8 @@ export const AssessmentView: React.FC<AssessmentViewProps> = ({
               </div>
             </div>
 
-            <div className="border border-slate-200 rounded-xl overflow-hidden text-xs">
-              <table className="w-full text-left">
+            <div className="border border-slate-200 rounded-xl overflow-x-auto text-xs">
+              <table className="w-full min-w-[400px] text-left">
                 <thead className="bg-slate-50 text-slate-700 border-b border-slate-200 font-bold">
                   <tr>
                     <th className="p-2.5">Distal Distance (cm)</th>

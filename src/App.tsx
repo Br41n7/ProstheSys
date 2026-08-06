@@ -35,6 +35,8 @@ import {
 import { Header } from './components/Header';
 import { Sidebar } from './components/Sidebar';
 import { AuthModal } from './components/Auth/AuthModal';
+import { LandingPage } from './components/Landing/LandingPage';
+import { SEOHead } from './components/SEOHead';
 import { AuthUser, PRESET_USERS, ROLE_PERMISSIONS } from './types/auth';
 
 import { DashboardView } from './components/Dashboard/DashboardView';
@@ -56,12 +58,13 @@ import { DatabaseView } from './components/Database/DatabaseView';
 
 export function App() {
   // Navigation & Workspace State
+  const [viewMode, setViewMode] = useState<'landing' | 'app'>('landing');
   const [activeTab, setActiveTab] = useState<string>('dashboard');
   const [mobileMenuOpen, setMobileMenuOpen] = useState<boolean>(false);
   const [selectedClinic, setSelectedClinic] = useState<ClinicBranch>(mockClinics[0]);
 
   // Auth & RBAC State
-  const [authUser, setAuthUser] = useState<AuthUser>(() => {
+  const [authUser, setAuthUser] = useState<AuthUser | null>(() => {
     const saved = localStorage.getItem('prosthesys_auth_user');
     if (saved) {
       try { return JSON.parse(saved); } catch (e) { /* ignore */ }
@@ -71,7 +74,7 @@ export function App() {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState<boolean>(false);
 
   // Derived user role
-  const userRole: UserRole = authUser.role;
+  const userRole: UserRole = authUser ? authUser.role : 'Prosthetist';
 
   const handleUpdateAuthUser = (user: AuthUser) => {
     setAuthUser(user);
@@ -83,9 +86,15 @@ export function App() {
     }
   };
 
+  const handleSignOut = () => {
+    setAuthUser(null);
+    localStorage.removeItem('prosthesys_auth_user');
+    setViewMode('landing');
+  };
+
   const handleDirectRoleChange = (role: UserRole) => {
     const matchedPreset = PRESET_USERS.find(u => u.role === role) || {
-      ...authUser,
+      ...(authUser || PRESET_USERS[0]),
       role
     };
     handleUpdateAuthUser(matchedPreset);
@@ -182,13 +191,46 @@ export function App() {
     setAppointments(prev => [apt, ...prev]);
   };
 
+  if (viewMode === 'landing') {
+    return (
+      <>
+        <SEOHead viewMode={viewMode} activeTab={activeTab} patientName={selectedPatient?.name} />
+        <LandingPage
+          onLaunchApp={() => setViewMode('app')}
+          onOpenAuthModal={() => setIsAuthModalOpen(true)}
+          onSelectRole={(usr) => {
+            handleUpdateAuthUser(usr);
+            setViewMode('app');
+          }}
+        />
+        <AuthModal
+          isOpen={isAuthModalOpen}
+          onClose={() => setIsAuthModalOpen(false)}
+          currentUser={authUser}
+          onLogin={(usr) => {
+            handleUpdateAuthUser(usr);
+            setViewMode('app');
+          }}
+          onSignUp={(usr) => {
+            handleUpdateAuthUser(usr);
+            setViewMode('app');
+          }}
+          onSignOut={handleSignOut}
+        />
+      </>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-[#F8FAFC] flex flex-col font-sans text-slate-900 antialiased selection:bg-blue-600 selection:text-white">
+      <SEOHead viewMode={viewMode} activeTab={activeTab} patientName={selectedPatient?.name} />
       
       {/* Top Header Navigation */}
       <Header
         authUser={authUser}
         onOpenAuthModal={() => setIsAuthModalOpen(true)}
+        onOpenLandingPage={() => setViewMode('landing')}
+        onSignOut={handleSignOut}
         userRole={userRole}
         onRoleChange={handleDirectRoleChange}
         selectedClinic={selectedClinic}
@@ -214,6 +256,8 @@ export function App() {
           selectedPatient={selectedPatient}
           isOpenMobile={mobileMenuOpen}
           onCloseMobile={() => setMobileMenuOpen(false)}
+          authUser={authUser}
+          onSignOut={handleSignOut}
         />
 
         {/* Content View Area */}
@@ -355,6 +399,7 @@ export function App() {
         currentUser={authUser}
         onLogin={handleUpdateAuthUser}
         onSignUp={handleUpdateAuthUser}
+        onSignOut={handleSignOut}
       />
 
     </div>

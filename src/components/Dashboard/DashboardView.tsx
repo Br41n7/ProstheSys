@@ -46,7 +46,7 @@ import {
 } from 'recharts';
 
 interface DashboardViewProps {
-  authUser?: AuthUser;
+  authUser?: AuthUser | null;
   userRole?: UserRole;
   patients?: Patient[];
   appointments?: Appointment[];
