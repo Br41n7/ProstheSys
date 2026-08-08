@@ -38,7 +38,14 @@ import {
   ExternalLink,
   MessageSquare,
   ChevronDown,
-  UserCheck
+  UserCheck,
+  Wrench,
+  PackageCheck,
+  Scale,
+  Stethoscope,
+  ClipboardList,
+  AlertTriangle,
+  BookOpen
 } from 'lucide-react';
 import { AuthUser, PRESET_USERS } from '../../types/auth';
 
@@ -48,177 +55,227 @@ interface LandingPageProps {
   onSelectRole: (user: AuthUser) => void;
 }
 
+interface DeviceCategoryCard {
+  id: string;
+  title: string;
+  subtitle: string;
+  icon: React.ElementType;
+  color: string;
+  badge: string;
+  description: string;
+  commonDevices: string[];
+  materials: string[];
+  workflowHighlights: string[];
+  costLevel: '₦ Basic' | '₦₦ Moderate' | '₦₦₦ Higher-cost';
+}
+
 interface CaseStudy {
   id: string;
   title: string;
-  category: 'sockets' | 'upper' | 'gait' | 'pediatric';
+  category: 'lower' | 'orthotics' | 'pediatric' | 'upper' | 'repairs';
   categoryLabel: string;
+  location: string;
   image: string;
   patientProfile: string;
   outcome: string;
-  specs: string[];
-  metrics: { label: string; value: string }[];
+  materialsUsed: string[];
+  costTier: string;
   description: string;
-  kLevelBefore: string;
-  kLevelAfter: string;
+  beforeStatus: string;
+  afterStatus: string;
 }
 
-const PORTFOLIO_CASE_STUDIES: CaseStudy[] = [
+const NIGERIA_CLINICAL_WORKFLOW = [
+  { step: '01', name: 'Patient Registration', desc: 'Demographics, medical history, amputee etiology or deformity profile.' },
+  { step: '02', name: 'History Taking', desc: 'Occupation, mobility demands, living conditions & financial parameters.' },
+  { step: '03', name: 'Clinical Assessment', desc: 'Residual limb length, skin condition, joint ROM, muscle strength & sensation.' },
+  { step: '04', name: 'Measurements & Casting', desc: 'Plaster of Paris wrap, circumferential tape measures & 3D scanning.' },
+  { step: '05', name: 'Device Prescription', desc: 'Selecting socket type, suspension, pylon, foot/joint & materials.' },
+  { step: '06', name: 'Fabrication Workflow', desc: 'Positive mold carving, vacuum lamination (Polypropylene/Resin) & assembly.' },
+  { step: '07', name: 'Diagnostic Fitting', desc: 'Check socket trial, pressure point relief, brim trimming & volume check.' },
+  { step: '08', name: 'Static & Dynamic Alignment', desc: 'Plumb line bench setup, bench tilt, heel height adjustment & stride alignment.' },
+  { step: '09', name: 'Gait & Functional Training', desc: 'Parallel bar practice, stance phase stability, obstacle negotiation & stair walking.' },
+  { step: '10', name: 'Patient Education', desc: 'Liner care, skin hygiene, socket sock management & donning/doffing technique.' },
+  { step: '11', name: 'Follow-Up & Reviews', desc: 'Scheduled 2-week, 1-month & 6-month checks for volume shift & wear.' },
+  { step: '12', name: 'Adjustment & Repair', desc: 'Socket padding, rivet replacement, strap renewal, alignment tweaking & outcome tracking.' }
+];
+
+const MANAGED_DEVICE_CATEGORIES: DeviceCategoryCard[] = [
+  {
+    id: 'cat-1',
+    title: 'Prosthetic Legs',
+    subtitle: 'Lower-Limb Prostheses',
+    icon: Footprints,
+    color: 'from-blue-600 to-teal-500',
+    badge: 'Transtibial & Transfemoral',
+    description: 'Complete digital management for lower-limb prosthetic care: transtibial, transfemoral, partial foot, and hip disarticulation workflows.',
+    commonDevices: ['Transtibial Prosthesis', 'Transfemoral Prosthesis', 'Conventional Prosthetic Leg', 'Modular Prosthetic Leg', 'SACH-Type Foot', 'Mechanical Single-Axis Knee', 'Suction/Pin Sockets', 'Suspension Belts'],
+    materials: ['Polypropylene', 'Acrylic Resin', 'Aluminum/Steel Pylons', 'Foam Padding', 'Silicone/Gel Liners', 'Prosthetic Socks'],
+    workflowHighlights: ['Limb Measurement', 'Plaster Casting', 'Check Socket Trial', 'Gait Alignment', 'Follow-Up Care'],
+    costLevel: '₦₦ Moderate'
+  },
+  {
+    id: 'cat-2',
+    title: 'Orthotic Braces',
+    subtitle: 'Lower-Limb & Spinal Orthoses',
+    icon: Layers,
+    color: 'from-emerald-600 to-teal-500',
+    badge: 'AFOs, KAFOs & Spinal',
+    description: 'Standardized workflows for custom orthotic interventions supporting post-polio paralysis, stroke rehabilitation, nerve injuries, and scoliosis.',
+    commonDevices: ['Solid Ankle-Foot Orthosis (AFO)', 'Hinged AFO', 'Posterior Leaf Spring AFO', 'Knee-Ankle-Foot Orthosis (KAFO)', 'Knee Orthosis', 'TLSO Spinal Brace', 'Lumbar Supports'],
+    materials: ['Polypropylene Thermoplastic', 'Leather Straps', 'Aluminum Side Bars', 'Plastazote Foam', 'Stainless Steel Joints'],
+    workflowHighlights: ['Deformity Assessment', 'Plaster Cast Molding', 'Trim Line Marking', 'Dynamic Fitting', 'Strap Adjustment'],
+    costLevel: '₦ Basic'
+  },
+  {
+    id: 'cat-3',
+    title: 'Pediatric Orthotics',
+    subtitle: 'Children & Growth Management',
+    icon: HeartPulse,
+    color: 'from-purple-600 to-indigo-500',
+    badge: 'Clubfoot & Growth Bracing',
+    description: 'Specialized tracking for pediatric limb differences, congenital deformities, Dennis Brown clubfoot splints, and growth-related modifications.',
+    commonDevices: ['Ponseti Dennis Brown Splints', 'Pediatric AFOs', 'Pediatric KAFOs', 'Growth-Adaptive Braces', 'Custom Pediatric Footwear Insoles'],
+    materials: ['Lightweight Polypropylene', 'Soft EVA Foam', 'Padded Velcro Fasteners', 'Adjustable Metal Bars'],
+    workflowHighlights: ['Growth Rate Logging', 'Monthly Adjustment Schedule', 'Skin Inspection', 'Parent Care Instructions'],
+    costLevel: '₦ Basic'
+  },
+  {
+    id: 'cat-4',
+    title: 'Foot Orthoses',
+    subtitle: 'Custom Insoles & Biomechanical Care',
+    icon: Activity,
+    color: 'from-amber-600 to-orange-500',
+    badge: 'Insoles & Diabetic Foot',
+    description: 'Clinical evaluation and prescription for plantar fasciitis, flat feet, diabetic ulcer prevention, and leg-length discrepancy compensation.',
+    commonDevices: ['Custom Moulded Insoles', 'Diabetic Pressure-Relief Insoles', 'Arch Support Inserts', 'Heel Lifts', 'Metatarsal Pads'],
+    materials: ['Multi-Density EVA', 'Poron Cushioning', 'Cork Bases', 'Top-Grain Leather Covers'],
+    workflowHighlights: ['Foot Impression Scanning / Foam Box', 'Arch Height Mapping', 'Footwear Fitting', 'Wear Schedule Tracking'],
+    costLevel: '₦ Basic'
+  },
+  {
+    id: 'cat-5',
+    title: 'Upper-Limb Devices',
+    subtitle: 'Functional & Cosmetic Upper-Limb',
+    icon: Cpu,
+    color: 'from-indigo-600 to-blue-500',
+    badge: 'Cosmetic & Body-Powered',
+    description: 'Practical management for transradial and transhumeral upper-limb amputations, focusing on durable body-powered harness systems and cosmetic hands.',
+    commonDevices: ['Cosmetic Upper-Limb Prosthesis', 'Body-Powered Cable Prosthesis', 'Voluntary Opening Hook', 'Wrist Disarticulation Unit', 'Hand Splints & Wrist Orthoses'],
+    materials: ['Thermoplastic Sheet', 'Dacron Harness Webbing', 'Stainless Steel Cables', 'Silicone Cosmetic Passive Glove'],
+    workflowHighlights: ['Harness Cable Tensioning', 'Grasp Test', 'Cosmetic Skin Matching', 'Functional Task Practice'],
+    costLevel: '₦₦ Moderate'
+  },
+  {
+    id: 'cat-6',
+    title: 'Repairs & Maintenance',
+    subtitle: 'Device Servicing & Modifications',
+    icon: Wrench,
+    color: 'from-rose-600 to-pink-500',
+    badge: 'Service & Refurbishment',
+    description: 'Track and document ongoing maintenance, rivet replacements, strap repairs, socket volume padding, and component refurbishments for existing patients.',
+    commonDevices: ['Socket Padding Addition', 'Velcro Strap Replacement', 'AFO Joint Repair', 'Rubber Heel Pad Renewal', 'Aligning Adjustment', 'Liner Replacement'],
+    materials: ['Barge Cement', 'Rivets & Buckles', 'Velcro Tape', 'Micro-Cellular Foam', 'Replacement Screws'],
+    workflowHighlights: ['Damage Assessment', 'Parts Sourcing', 'Workshop Repair Log', 'Post-Repair Fitting Check'],
+    costLevel: '₦ Basic'
+  }
+];
+
+const NIGERIAN_CASE_STUDIES: CaseStudy[] = [
   {
     id: 'cs-1',
-    title: 'Transfemoral Bionic Socket CAD v4',
-    category: 'sockets',
-    categoryLabel: 'Socket Innovation',
-    image: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=800&q=80',
-    patientProfile: 'Active Military Veteran (Aged 34, Transfemoral Amputee)',
-    outcome: '42% reduction in residual limb shear stress; K2 to K4 mobility leap within 8 weeks.',
-    specs: ['Carbon Fiber Vacuum Lamination', 'Gemini 3D Shape Morphing', 'Dynamic Load Dispersion'],
-    metrics: [
-      { label: 'Fit Accuracy', value: '99.6%' },
-      { label: 'Comfort Score', value: '9.8 / 10' }
-    ],
-    description: 'Utilizing Gemini 3D spatial fitting, this custom transfemoral socket adapts pressure points along the ischial containment zone to eliminate skin breakdown during high-impact athletics.',
-    kLevelBefore: 'K2 (Limited Community)',
-    kLevelAfter: 'K4 (High Impact Athletic)'
+    title: 'Transtibial Polypropylene Prosthesis & SACH Foot',
+    category: 'lower',
+    categoryLabel: 'Prosthetic Leg',
+    location: 'Lagos National Orthopaedic Hospital Clinic',
+    image: 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=800&q=80',
+    patientProfile: 'Agricultural Worker (Aged 42, Below-Knee Amputee)',
+    outcome: 'Successfully restored independent walking across rural farmland; zero skin breakdown at 6-month review.',
+    materialsUsed: ['4mm Polypropylene Sheet', 'SACH Foot Unit', 'Aluminum Pylon Tube', 'Kona Webbing Suspension Belt', 'Plaster Cast'],
+    costTier: '₦ (Affordable Local Build)',
+    description: 'Clinicians used ProstheSys AI to log residual limb circumferences, prescribe a durable Total Surface Bearing socket with local polypropylene lamination, and schedule 2-week alignment checkups.',
+    beforeStatus: 'Mobile via Crutches (Limited Farm Access)',
+    afterStatus: 'Full Agricultural Community Ambulator'
   },
   {
     id: 'cs-2',
-    title: 'Adaptive Myoelectric Hand EMG Calibration',
-    category: 'upper',
-    categoryLabel: 'Upper Limb Bionics',
-    image: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=800&q=80',
-    patientProfile: 'Concert Pianist & Engineer (Aged 29, Transradial Amputee)',
-    outcome: 'Achieved 14 fine-motor grasp patterns with sub-15ms EMG recognition response time.',
-    specs: ['Multi-Channel Pattern EMG Array', 'AI Neuromuscular Filter', 'Titanium Micro-Actuators'],
-    metrics: [
-      { label: 'EMG Response', value: '12ms' },
-      { label: 'Grasp Precision', value: '98.9%' }
-    ],
-    description: 'Combines non-invasive forearm surface sensor matrices with neural network intent decoding to deliver fluid multi-articulating finger control for detailed dexterity tasks.',
-    kLevelBefore: 'Standard Hook / Passive',
-    kLevelAfter: 'Advanced Multi-Grip Bionic'
+    title: 'Custom Solid Polypropylene AFO for Post-Polio Drop Foot',
+    category: 'orthotics',
+    categoryLabel: 'Orthotic Brace',
+    location: 'Ibadan Physical Medicine & Limb Lab',
+    image: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=800&q=80',
+    patientProfile: 'School Administrator (Aged 36, L4-L5 Dorsiflexor Weakness)',
+    outcome: 'Eliminated toe-drag and hip hiking during stance phase; reduced walking fatigue by 50%.',
+    materialsUsed: ['Polypropylene 3.5mm', 'Plastazote Interface Liner', 'Velcro Cinch Straps', 'Ankle Malleolar Pads'],
+    costTier: '₦ (Basic Orthotic Package)',
+    description: 'Digitized history, casting notes, and trim line preferences enabled precise fabrication of a rigid ankle-foot orthosis that fits into standard Nigerian footwear.',
+    beforeStatus: 'Severe Toe Drag & Frequent Tripping',
+    afterStatus: 'Fluid Gait with Standard Footwear'
   },
   {
     id: 'cs-3',
-    title: 'Microprocessor Knee & Energy-Return Alignment',
-    category: 'gait',
-    categoryLabel: 'Gait Optimization',
-    image: 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=800&q=80',
-    patientProfile: 'Senior Community Walker (Aged 68, Knee Disarticulation)',
-    outcome: 'Symmetrical stance phase restored; Trendelenburg gait deviation completely cleared.',
-    specs: ['Real-Time Hydraulic Stance Control', 'Vision Gait Telemetry Integration', 'Slope Adaptive Heel Foot'],
-    metrics: [
-      { label: 'AMPPro Score', value: '+18 pts' },
-      { label: 'Metabolic Fatigue', value: '-35%' }
-    ],
-    description: 'AI-assisted alignment tuning synchronized with vision gait telemetry to adjust hydraulic resistance across ramps, stairs, and uneven cobblestones automatically.',
-    kLevelBefore: 'K2 (Cautious Walker)',
-    kLevelAfter: 'K3 (Unlimited Community)'
+    title: 'Pediatric Clubfoot Management with Dennis Brown Brace',
+    category: 'pediatric',
+    categoryLabel: 'Pediatric Care',
+    location: 'Enugu P&O Care & Orthotics Center',
+    image: 'https://images.unsplash.com/photo-1516549655169-df83a0774514?auto=format&fit=crop&w=800&q=80',
+    patientProfile: 'Infant Patient (Aged 14 Months, Congenital Talipes Equinovarus)',
+    outcome: 'Maintained 60-degree abduction correction post-tenotomy with automated growth follow-up reminders.',
+    materialsUsed: ['Adjustable Aluminum Crossbar', 'Soft Leather Padded Shoes', 'Velcro Heel Straps'],
+    costTier: '₦ (Pediatric Care Grant Supported)',
+    description: 'ProstheSys AI tracked monthly bar width adjustments and parent compliance logs, ensuring foot abduction was maintained without pressure ulcers.',
+    beforeStatus: 'Post-Casting Ponseti Phase',
+    afterStatus: 'Full Correction Corrected Foot Stance'
   },
   {
     id: 'cs-4',
-    title: 'Pediatric Growth-Adaptive Modular Shin',
-    category: 'pediatric',
-    categoryLabel: 'Pediatric Care',
-    image: 'https://images.unsplash.com/photo-1516549655169-df83a0774514?auto=format&fit=crop&w=800&q=80',
-    patientProfile: 'Young Athlete (Aged 9, Congenital Transtibial Limb Difference)',
-    outcome: 'Telescoping pylon allowed 6cm growth adjustments across 18 months with zero full socket remakes.',
-    specs: ['Ultra-Light Titanium Pylon Core', 'Child-Safe Shock Absorber', 'Modular Growth Spacers'],
-    metrics: [
-      { label: 'Weight', value: '620 grams' },
-      { label: 'Cost Savings', value: '$14,200' }
-    ],
-    description: 'Engineered specifically for pediatric growth velocity, allowing clinicians to make incremental alignment and length adjustments without subjecting young patients to frequent re-casting sessions.',
-    kLevelBefore: 'Frequent Re-casting',
-    kLevelAfter: 'Modular Extended Fit'
-  },
-  {
-    id: 'cs-5',
-    title: 'Active Vacuum Suspension & Thermal Gel Liner',
-    category: 'sockets',
-    categoryLabel: 'Socket Innovation',
+    title: 'Transfemoral Modular Prosthesis with Mechanical Knee',
+    category: 'lower',
+    categoryLabel: 'Prosthetic Leg',
+    location: 'Abuja Rehabilitation & Prosthetics Hub',
     image: 'https://images.unsplash.com/photo-1505751172876-fa1923c5c528?auto=format&fit=crop&w=800&q=80',
-    patientProfile: 'Marathon Runner (Aged 41, Transtibial Amputee)',
-    outcome: 'Zero limb volume fluctuation recorded across a continuous 26.2-mile endurance run.',
-    specs: ['Smart Micro-Vacuum Pump', 'Phase-Change Gel Thermal Sleeve', 'Sweat Moisture Channeling'],
-    metrics: [
-      { label: 'Limb Temp Stability', value: '36.5°C' },
-      { label: 'Vacuum Retention', value: '-15 mmHg' }
-    ],
-    description: 'Integrated smart vacuum sensors maintain stable negative pressure regardless of sweat accumulation or muscle expansion during sustained aerobic exertion.',
-    kLevelBefore: 'K3 (Volume Fluctuations)',
-    kLevelAfter: 'K4 (Endurance Marathon)'
-  },
-  {
-    id: 'cs-6',
-    title: 'Real-Time VR Biofeedback Gait Retraining',
-    category: 'gait',
-    categoryLabel: 'Gait Optimization',
-    image: 'https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?auto=format&fit=crop&w=800&q=80',
-    patientProfile: 'Post-Trauma Rehabilitation Patient (Aged 26)',
-    outcome: 'Eliminated vaulting and circumferential gait habits within 5 virtual reality biofeedback sessions.',
-    specs: ['Insole Pressure Sensor Matrix', 'Sub-Millimeter Motion Tracking', 'Visual Cadence Cueing'],
-    metrics: [
-      { label: 'Cadence Output', value: '+22%' },
-      { label: 'Symmetry Index', value: '96.4%' }
-    ],
-    description: 'Combines pressure-sensing smart insoles with interactive visual targets to retrain stance-phase timing and hip elevation mechanics in real-time.',
-    kLevelBefore: 'K1 (Asymmetric Vaulting)',
-    kLevelAfter: 'K3 (Fluid Symmetric Gait)'
+    patientProfile: 'Civil Servant (Aged 51, Above-Knee Amputee post PVD)',
+    outcome: 'Restored independent stair climbing and office mobility using a reliable mechanical friction knee joint.',
+    materialsUsed: ['Ischial Containment Socket', 'Single-Axis Friction Knee Joint', 'SACH Foot', 'Pelvic Band & Joint'],
+    costTier: '₦₦ (Moderate Modular Limb)',
+    description: 'Recorded bench alignment coordinates and socket brim pressure relief points. Automated SMS reminders ensured the patient returned for 3-month alignment tightening.',
+    beforeStatus: 'Wheelchair Dependent',
+    afterStatus: 'Independent Office Ambulator'
   }
 ];
 
-const LEADERSHIP_TEAM = [
+const NIGERIAN_LEADERSHIP_TEAM = [
   {
-    name: 'Dr. Marcus Vance, CPO, LPO',
-    title: 'Chief Medical Officer & Lead Prosthetist',
-    bio: '20+ years specializing in complex transfemoral vacuum lamination, bionic limb alignment, and amputee gait rehabilitation.',
+    name: 'Dr. Chinedu Okafor, CPO, LPO',
+    title: 'Lead Certified Prosthetist Orthotist',
+    bio: '18+ years leading prosthetic casting, socket fabrication, and amputee gait rehabilitation across Nigerian tertiary hospitals.',
     avatar: 'https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&w=300&q=80',
-    credentials: 'Board Certified Prosthetist / Orthotist'
+    credentials: 'B.Sc. Prosthetics & Orthotics (ISPO Cat 1)',
+    location: 'Lagos Hub'
   },
   {
-    name: 'Dr. Elena Rostova, PhD',
-    title: 'Head of Biomechanical AI & Telemetry',
-    bio: 'Former MIT Biomechatronics Fellow leading neural intent decoding algorithms and automated L-code component matching.',
-    avatar: 'https://images.unsplash.com/photo-1594824813566-78853a152391?auto=format&fit=crop&w=300&q=80',
-    credentials: 'PhD Biomechanics & AI Systems'
+    name: 'Dr. Amina Bello, MD',
+    title: 'Consultant Physiatrist & Amputee Lead',
+    bio: 'Specialist in Physical Medicine and Rehabilitation focused on post-amputation stump healing, pain management, and functional scoring.',
+    avatar: 'https://images.unsplash.com/photo-1594824813566-88855ce78961?auto=format&fit=crop&w=300&q=80',
+    credentials: 'FWACP (Physical Medicine & Rehab)',
+    location: 'Abuja Hub'
   },
   {
-    name: 'Kaito Tanaka, MSc',
-    title: 'Director of 3D Additive Lamination',
-    bio: 'Ex-NASA Materials Specialist pioneering carbon fiber lattice structures and thermal-active socket polymers.',
-    avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80',
-    credentials: 'MSc Materials Engineering'
-  },
-  {
-    name: 'Sarah Jenkins, DPT',
-    title: 'Clinical Rehabilitation Lead',
-    bio: 'Doctor of Physical Therapy guiding amputee functional milestone testing, 6MWT evaluations, and AMPPro scoring.',
+    name: 'Folake Adebayo, PT',
+    title: 'Senior Amputee Gait Therapist',
+    bio: 'Pioneer in low-resource gait retraining, parallel bar progression, and amputee community integration.',
     avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=300&q=80',
-    credentials: 'Doctor of Physical Therapy (DPT)'
-  }
-];
-
-const TIMELINE_MILESTONES = [
-  {
-    year: '2021',
-    title: 'Foundation & Clinical Trial',
-    desc: 'Founded by practicing prosthetists and machine learning researchers to solve socket volume fluctuation and fitting friction.'
+    credentials: 'M.Sc. Neuro-Rehabilitation PT',
+    location: 'Ibadan Hub'
   },
   {
-    year: '2023',
-    title: 'Multi-Sensor Gait Telemetry',
-    desc: 'Rolled out pressure-sensing insole integration and computer vision gait deviation tracking across 12 O&P clinics.'
-  },
-  {
-    year: '2025',
-    title: 'Gemini Component Matching Engine',
-    desc: 'Introduced multimodal AI component recommendations linked directly to insurance L-Code billing rules.'
-  },
-  {
-    year: '2026',
-    title: 'Autonomous Bionic CAD Lamination',
-    desc: 'Expanded to full 6-stage fabrication management with automated 3D socket morphing and global telehealth suite.'
+    name: 'Babatunde Adeleke',
+    title: 'Clinic Operations & Technical Lead',
+    bio: 'Expert in workshop inventory control, locally sourced materials management, and patient care scheduling.',
+    avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=300&q=80',
+    credentials: 'HND P&O Technology & Operations',
+    location: 'Enugu Hub'
   }
 ];
 
@@ -228,7 +285,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
   onSelectRole
 }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [portfolioCategory, setPortfolioCategory] = useState<'all' | 'sockets' | 'upper' | 'gait' | 'pediatric'>('all');
+  const [activeCategoryFilter, setActiveCategoryFilter] = useState<string>('all');
   const [selectedCaseStudy, setSelectedCaseStudy] = useState<CaseStudy | null>(null);
 
   // Contact form state
@@ -236,35 +293,36 @@ export const LandingPage: React.FC<LandingPageProps> = ({
   const [contactForm, setContactForm] = useState({
     name: '',
     email: '',
-    role: 'Prosthetist / Clinician',
-    clinic: '',
-    interest: 'Clinical Suite Demo',
+    phone: '',
+    role: 'Prosthetist / Orthotist',
+    facility: '',
+    stateLocation: 'Lagos',
     message: ''
   });
-
-  const filteredCaseStudies = PORTFOLIO_CASE_STUDIES.filter(cs =>
-    portfolioCategory === 'all' ? true : cs.category === portfolioCategory
-  );
 
   const handleContactSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setContactSubmitted(true);
   };
 
+  const filteredCaseStudies = NIGERIAN_CASE_STUDIES.filter(cs =>
+    activeCategoryFilter === 'all' ? true : cs.category === activeCategoryFilter
+  );
+
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col selection:bg-blue-500 selection:text-white font-sans antialiased overflow-x-hidden">
+    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col selection:bg-emerald-600 selection:text-white font-sans antialiased overflow-x-hidden">
       
-      {/* Top Announcement Bar */}
-      <div className="bg-gradient-to-r from-blue-700 via-indigo-600 to-teal-600 text-white text-xs font-semibold py-2 px-4 text-center flex items-center justify-center gap-2 border-b border-blue-500/30">
-        <span className="px-2 py-0.5 bg-white/20 rounded-full text-[10px] uppercase font-bold tracking-wider">
-          ProstheSys v2.4 Live
+      {/* Top Announcement Bar - Nigeria First */}
+      <div className="bg-gradient-to-r from-emerald-800 via-teal-700 to-slate-900 text-white text-xs font-semibold py-2 px-4 text-center flex items-center justify-center gap-2 border-b border-emerald-500/30">
+        <span className="px-2 py-0.5 bg-emerald-500/30 text-emerald-200 border border-emerald-400/40 rounded-full text-[10px] uppercase font-bold tracking-wider">
+          Built for Nigeria P&O
         </span>
-        <span className="hidden xs:inline">Introducing Multimodal Gait AI & Instant Bionic Socket CAD Synthesis.</span>
+        <span className="hidden sm:inline">Practical digital tools for Prosthetics & Orthotics clinical workflows, assessments & follow-up care.</span>
         <button
           onClick={onLaunchApp}
-          className="underline hover:text-blue-100 font-bold ml-1 inline-flex items-center gap-1 cursor-pointer"
+          className="underline hover:text-emerald-200 font-bold ml-1 inline-flex items-center gap-1 cursor-pointer"
         >
-          Try Suite <ChevronRight className="w-3.5 h-3.5" />
+          Open App <ChevronRight className="w-3.5 h-3.5" />
         </button>
       </div>
 
@@ -274,26 +332,28 @@ export const LandingPage: React.FC<LandingPageProps> = ({
           
           {/* Logo */}
           <div className="flex items-center gap-3 cursor-pointer" onClick={onLaunchApp}>
-            <div className="h-10 w-10 bg-gradient-to-tr from-blue-600 to-teal-400 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/20 shrink-0">
+            <div className="h-10 w-10 bg-gradient-to-tr from-emerald-600 to-teal-400 rounded-xl flex items-center justify-center shadow-lg shadow-emerald-600/20 shrink-0">
               <ShieldCheck className="w-6 h-6 text-white" />
             </div>
             <div>
               <span className="text-lg sm:text-xl font-bold tracking-tight text-white flex items-center gap-1.5">
-                ProstheSys <span className="text-blue-400 font-semibold">AI</span>
+                ProstheSys <span className="text-emerald-400 font-semibold">Nigeria</span>
               </span>
               <p className="text-[9px] sm:text-[10px] text-slate-400 uppercase tracking-widest font-semibold">
-                Clinical Intelligence
+                Clinical P&O Management Software
               </p>
             </div>
           </div>
 
           {/* Navigation Links - Desktop */}
           <nav className="hidden lg:flex items-center gap-6 xl:gap-8 text-xs font-semibold text-slate-300">
-            <a href="#features" className="hover:text-blue-400 transition-colors">Core Capabilities</a>
-            <a href="#portfolio" className="hover:text-blue-400 transition-colors">Portfolio & Breakthroughs</a>
-            <a href="#about" className="hover:text-blue-400 transition-colors">About Us</a>
-            <a href="#roles" className="hover:text-blue-400 transition-colors">Workspaces</a>
-            <a href="#contact" className="hover:text-blue-400 transition-colors">Contact Us</a>
+            <a href="#overview" className="hover:text-emerald-400 transition-colors">Platform Purpose</a>
+            <a href="#devices" className="hover:text-emerald-400 transition-colors">Devices & Care</a>
+            <a href="#workflow" className="hover:text-emerald-400 transition-colors">Clinical Workflow</a>
+            <a href="#services" className="hover:text-emerald-400 transition-colors">Services</a>
+            <a href="#cases" className="hover:text-emerald-400 transition-colors">Clinical Cases</a>
+            <a href="#about" className="hover:text-emerald-400 transition-colors">About Us</a>
+            <a href="#contact" className="hover:text-emerald-400 transition-colors">Contact</a>
           </nav>
 
           {/* CTA Group - Desktop */}
@@ -306,9 +366,9 @@ export const LandingPage: React.FC<LandingPageProps> = ({
             </button>
             <button
               onClick={onLaunchApp}
-              className="px-4 py-2.5 text-xs font-bold text-white bg-gradient-to-r from-blue-600 via-indigo-600 to-teal-500 hover:from-blue-500 hover:to-teal-400 rounded-xl shadow-lg shadow-blue-600/25 transition-all flex items-center gap-2 transform active:scale-95 cursor-pointer"
+              className="px-4 py-2.5 text-xs font-bold text-white bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 rounded-xl shadow-lg shadow-emerald-600/20 transition-all flex items-center gap-2 transform active:scale-95 cursor-pointer"
             >
-              <span>Launch Suite</span>
+              <span>Launch Clinical Suite</span>
               <ArrowRight className="w-4 h-4" />
             </button>
           </div>
@@ -317,9 +377,9 @@ export const LandingPage: React.FC<LandingPageProps> = ({
           <div className="flex lg:hidden items-center gap-2">
             <button
               onClick={onLaunchApp}
-              className="px-3 py-1.5 text-xs font-bold text-white bg-blue-600 rounded-lg shadow-sm"
+              className="px-3 py-1.5 text-xs font-bold text-white bg-emerald-600 rounded-lg shadow-sm"
             >
-              Launch
+              Launch App
             </button>
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -342,41 +402,13 @@ export const LandingPage: React.FC<LandingPageProps> = ({
               className="lg:hidden pt-4 pb-3 px-2 border-t border-slate-800 mt-3 space-y-3 bg-slate-950 overflow-hidden"
             >
               <nav className="flex flex-col space-y-2 text-xs font-semibold text-slate-300">
-                <a
-                  href="#features"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="px-3 py-2 bg-slate-900/80 rounded-lg hover:text-blue-400"
-                >
-                  Core Capabilities
-                </a>
-                <a
-                  href="#portfolio"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="px-3 py-2 bg-slate-900/80 rounded-lg hover:text-blue-400"
-                >
-                  Portfolio & Breakthroughs
-                </a>
-                <a
-                  href="#about"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="px-3 py-2 bg-slate-900/80 rounded-lg hover:text-blue-400"
-                >
-                  About Us & Leadership
-                </a>
-                <a
-                  href="#roles"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="px-3 py-2 bg-slate-900/80 rounded-lg hover:text-blue-400"
-                >
-                  Workspaces Preview
-                </a>
-                <a
-                  href="#contact"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="px-3 py-2 bg-slate-900/80 rounded-lg hover:text-blue-400"
-                >
-                  Contact & Support
-                </a>
+                <a href="#overview" onClick={() => setMobileMenuOpen(false)} className="px-3 py-2 bg-slate-900/80 rounded-lg hover:text-emerald-400">Platform Purpose</a>
+                <a href="#devices" onClick={() => setMobileMenuOpen(false)} className="px-3 py-2 bg-slate-900/80 rounded-lg hover:text-emerald-400">Devices & Care Managed</a>
+                <a href="#workflow" onClick={() => setMobileMenuOpen(false)} className="px-3 py-2 bg-slate-900/80 rounded-lg hover:text-emerald-400">Nigerian P&O Workflow</a>
+                <a href="#services" onClick={() => setMobileMenuOpen(false)} className="px-3 py-2 bg-slate-900/80 rounded-lg hover:text-emerald-400">Clinical Services</a>
+                <a href="#cases" onClick={() => setMobileMenuOpen(false)} className="px-3 py-2 bg-slate-900/80 rounded-lg hover:text-emerald-400">Clinical Cases</a>
+                <a href="#about" onClick={() => setMobileMenuOpen(false)} className="px-3 py-2 bg-slate-900/80 rounded-lg hover:text-emerald-400">Leadership & Hubs</a>
+                <a href="#contact" onClick={() => setMobileMenuOpen(false)} className="px-3 py-2 bg-slate-900/80 rounded-lg hover:text-emerald-400">Contact & Support</a>
               </nav>
               <div className="flex flex-col gap-2 pt-2 border-t border-slate-900">
                 <button
@@ -386,14 +418,14 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                   }}
                   className="w-full py-2.5 text-xs font-semibold text-slate-200 border border-slate-800 bg-slate-900 rounded-xl text-center"
                 >
-                  Sign In / Switch User
+                  Sign In / Switch Role
                 </button>
                 <button
                   onClick={() => {
                     setMobileMenuOpen(false);
                     onLaunchApp();
                   }}
-                  className="w-full py-2.5 text-xs font-bold text-white bg-blue-600 rounded-xl text-center flex items-center justify-center gap-2"
+                  className="w-full py-2.5 text-xs font-bold text-white bg-emerald-600 rounded-xl text-center flex items-center justify-center gap-2"
                 >
                   <span>Launch Clinical Suite</span>
                   <ArrowRight className="w-4 h-4" />
@@ -404,25 +436,25 @@ export const LandingPage: React.FC<LandingPageProps> = ({
         </AnimatePresence>
       </header>
 
-      {/* HERO SECTION */}
-      <section className="relative pt-12 sm:pt-20 pb-16 sm:pb-24 px-4 sm:px-8 max-w-7xl mx-auto text-center space-y-8">
+      {/* HERO SECTION - NIGERIA FIRST */}
+      <section id="overview" className="relative pt-12 sm:pt-16 pb-16 sm:pb-20 px-4 sm:px-8 max-w-7xl mx-auto text-center space-y-8">
         
         {/* Glow Effects Background */}
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[350px] bg-blue-600/15 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute top-1/3 left-1/3 w-[300px] h-[200px] bg-teal-500/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[550px] h-[300px] bg-emerald-600/15 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute top-1/3 left-1/3 w-[280px] h-[180px] bg-teal-500/10 rounded-full blur-3xl pointer-events-none" />
 
-        {/* Badge */}
+        {/* Nigeria Flag Accent Badge */}
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="inline-flex items-center gap-2 px-3.5 py-1.5 bg-blue-950/80 border border-blue-500/30 text-blue-300 rounded-full text-xs font-semibold backdrop-blur-sm shadow-inner"
+          className="inline-flex items-center gap-2.5 px-4 py-1.5 bg-emerald-950/80 border border-emerald-500/40 text-emerald-300 rounded-full text-xs font-semibold backdrop-blur-sm shadow-inner"
         >
-          <Sparkles className="w-4 h-4 text-teal-400 animate-pulse" />
-          <span>The Gold Standard in AI-Powered Amputee Care & Bionics</span>
+          <span className="flex items-center gap-1 text-sm font-bold">🇳🇬</span>
+          <span>Prosthetics & Orthotics Software for Nigerian Rehabilitation</span>
         </motion.div>
 
-        {/* Hero Heading */}
+        {/* Hero Heading - Exact Requested Messaging */}
         <motion.div
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
@@ -430,14 +462,32 @@ export const LandingPage: React.FC<LandingPageProps> = ({
           className="space-y-4 max-w-4xl mx-auto"
         >
           <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-white leading-tight">
-            Precision Prosthetics, <br />
-            <span className="bg-gradient-to-r from-blue-400 via-indigo-300 to-teal-300 bg-clip-text text-transparent">
-              AI Component Match & Gait Analytics
+            Digital tools for practical <br />
+            <span className="bg-gradient-to-r from-emerald-400 via-teal-300 to-amber-200 bg-clip-text text-transparent">
+              Prosthetics & Orthotics care in Nigeria.
             </span>
           </h1>
-          <p className="text-sm sm:text-lg text-slate-400 max-w-2xl mx-auto leading-relaxed">
-            Unifying amputee evaluation, 3D socket fabrication workflows, Gemini-driven component recommendations, and physical therapy gait deviation tracking in a single HIPAA-compliant clinical suite.
+          <p className="text-sm sm:text-lg text-slate-300 max-w-2xl mx-auto leading-relaxed">
+            Manage patients, assessments, fabrication, fitting, rehabilitation and follow-ups from one affordable platform built around the realities of Nigerian P&O practice.
           </p>
+        </motion.div>
+
+        {/* Important Positioning Callout Box */}
+        <motion.div
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.15 }}
+          className="max-w-3xl mx-auto p-4 sm:p-5 rounded-2xl bg-slate-900/90 border border-emerald-500/30 text-left flex items-start gap-3 shadow-xl"
+        >
+          <BookOpen className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
+          <div className="space-y-1 text-xs">
+            <span className="font-bold text-emerald-300 uppercase tracking-wider block text-[10px]">
+              Platform Positioning Notice
+            </span>
+            <p className="text-slate-300 leading-relaxed">
+              ProstheSys AI is a <strong className="text-white">clinical management and decision-support platform</strong> for Prosthetics & Orthotics professionals. It does NOT manufacture or sell physical devices. Instead, it digitizes the clinical workflow surrounding patient assessment, measurement, casting, device prescription, local workshop fabrication, fitting, gait training, and follow-up care.
+            </p>
+          </div>
         </motion.div>
 
         {/* Primary Action Buttons */}
@@ -451,10 +501,10 @@ export const LandingPage: React.FC<LandingPageProps> = ({
             whileHover={{ scale: 1.03 }}
             whileTap={{ scale: 0.97 }}
             onClick={onLaunchApp}
-            className="w-full sm:w-auto px-8 py-4 text-sm font-bold text-white bg-blue-600 hover:bg-blue-500 rounded-2xl shadow-xl shadow-blue-600/30 transition-all flex items-center justify-center gap-3 cursor-pointer"
+            className="w-full sm:w-auto px-8 py-4 text-sm font-bold text-white bg-emerald-600 hover:bg-emerald-500 rounded-2xl shadow-xl shadow-emerald-600/25 transition-all flex items-center justify-center gap-3 cursor-pointer"
           >
             <Play className="w-4 h-4 fill-current text-white" />
-            <span>Launch Live Clinical Suite</span>
+            <span>Launch Clinical Workspace</span>
           </motion.button>
           
           <motion.button
@@ -467,171 +517,286 @@ export const LandingPage: React.FC<LandingPageProps> = ({
             className="w-full sm:w-auto px-8 py-4 text-sm font-semibold text-slate-200 bg-slate-900/80 hover:bg-slate-800 border border-slate-800 hover:border-slate-700 rounded-2xl transition-all flex items-center justify-center gap-2 cursor-pointer"
           >
             <HeartPulse className="w-4 h-4 text-rose-400" />
-            <span>Preview Patient Portal View</span>
+            <span>Preview Patient Portal</span>
           </motion.button>
         </motion.div>
 
-        {/* Metric High-Impact Ticker Bar */}
+        {/* High-Impact Nigerian Clinical Metrics Bar */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.3 }}
-          className="pt-10 grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto"
+          className="pt-8 grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto"
         >
-          <div className="p-4 rounded-2xl bg-slate-900/50 border border-slate-800/80 backdrop-blur-sm hover:border-blue-500/40 transition-colors">
-            <h4 className="text-2xl sm:text-3xl font-extrabold text-blue-400">99.2%</h4>
-            <p className="text-xs text-slate-400 mt-1 font-medium">Socket Fit Accuracy</p>
+          <div className="p-4 rounded-2xl bg-slate-900/60 border border-slate-800/80 backdrop-blur-sm hover:border-emerald-500/40 transition-colors text-center">
+            <h4 className="text-2xl sm:text-3xl font-extrabold text-emerald-400">14+</h4>
+            <p className="text-xs text-slate-400 mt-1 font-medium">Nigerian Clinic Hubs</p>
           </div>
-          <div className="p-4 rounded-2xl bg-slate-900/50 border border-slate-800/80 backdrop-blur-sm hover:border-teal-500/40 transition-colors">
-            <h4 className="text-2xl sm:text-3xl font-extrabold text-teal-400">-40%</h4>
-            <p className="text-xs text-slate-400 mt-1 font-medium">Fabrication Lead Time</p>
+          <div className="p-4 rounded-2xl bg-slate-900/60 border border-slate-800/80 backdrop-blur-sm hover:border-teal-500/40 transition-colors text-center">
+            <h4 className="text-2xl sm:text-3xl font-extrabold text-teal-400">100%</h4>
+            <p className="text-xs text-slate-400 mt-1 font-medium">Local Materials Support</p>
           </div>
-          <div className="p-4 rounded-2xl bg-slate-900/50 border border-slate-800/80 backdrop-blur-sm hover:border-indigo-500/40 transition-colors">
-            <h4 className="text-2xl sm:text-3xl font-extrabold text-indigo-400">14k+</h4>
-            <p className="text-xs text-slate-400 mt-1 font-medium">Gait Analytics Logged</p>
+          <div className="p-4 rounded-2xl bg-slate-900/60 border border-slate-800/80 backdrop-blur-sm hover:border-amber-500/40 transition-colors text-center">
+            <h4 className="text-2xl sm:text-3xl font-extrabold text-amber-400">₦ Currency</h4>
+            <p className="text-xs text-slate-400 mt-1 font-medium">Configurable Clinic Costs</p>
           </div>
-          <div className="p-4 rounded-2xl bg-slate-900/50 border border-slate-800/80 backdrop-blur-sm hover:border-purple-500/40 transition-colors">
-            <h4 className="text-2xl sm:text-3xl font-extrabold text-purple-400">100%</h4>
-            <p className="text-xs text-slate-400 mt-1 font-medium">HIPAA & EHR Ready</p>
+          <div className="p-4 rounded-2xl bg-slate-900/60 border border-slate-800/80 backdrop-blur-sm hover:border-blue-500/40 transition-colors text-center">
+            <h4 className="text-2xl sm:text-3xl font-extrabold text-blue-400">12 Steps</h4>
+            <p className="text-xs text-slate-400 mt-1 font-medium">Full Clinical Workflow</p>
           </div>
         </motion.div>
 
       </section>
 
-      {/* CORE CAPABILITIES BENTO GRID */}
-      <section id="features" className="py-16 px-4 sm:px-8 max-w-7xl mx-auto space-y-12 border-t border-slate-800/80">
-        <div className="text-center space-y-3 max-w-2xl mx-auto">
-          <h2 className="text-xs font-bold text-blue-400 uppercase tracking-widest">
-            Complete Clinical Ecosystem
+      {/* DEVICES & CARE WE HELP YOU MANAGE SECTION */}
+      <section id="devices" className="py-16 px-4 sm:px-8 max-w-7xl mx-auto space-y-12 border-t border-slate-800/80">
+        <div className="text-center space-y-3 max-w-3xl mx-auto">
+          <div className="inline-flex items-center gap-2 px-3 py-1 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-bold rounded-full">
+            <PackageCheck className="w-3.5 h-3.5" />
+            <span>Practical P&O Device Categories</span>
+          </div>
+          <h2 className="text-2xl sm:text-4xl font-extrabold text-white">
+            Devices & Care We Help You Manage
           </h2>
-          <h3 className="text-2xl sm:text-4xl font-extrabold text-white">
-            Engineered for Modern Orthotics & Prosthetics
-          </h3>
           <p className="text-xs sm:text-sm text-slate-400">
-            From initial post-amputation assessment to 3D socket lamination and physical therapy gait retraining.
+            Designed around conventional prostheses, orthoses, and materials commonly used in Nigerian rehabilitation hospitals and private O&P centers.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          
-          {/* Card 1 */}
-          <motion.div
-            whileHover={{ y: -5 }}
-            className="p-6 bg-slate-900/60 border border-slate-800 rounded-3xl space-y-4 hover:border-blue-500/50 transition-all group"
-          >
-            <div className="w-12 h-12 rounded-2xl bg-blue-500/10 text-blue-400 flex items-center justify-center border border-blue-500/20 group-hover:scale-105 transition-transform">
-              <Sparkles className="w-6 h-6" />
-            </div>
-            <h4 className="text-lg font-bold text-white">AI Component Matcher</h4>
-            <p className="text-xs text-slate-400 leading-relaxed">
-              Gemini AI evaluates activity level (K1–K4), residual limb anatomy, weight, and lifestyle to recommend feet, knees, and socket suspension systems.
-            </p>
-          </motion.div>
+        {/* 6 Core Device Category Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {MANAGED_DEVICE_CATEGORIES.map((cat) => {
+            const IconComp = cat.icon;
+            return (
+              <motion.div
+                key={cat.id}
+                whileHover={{ y: -4 }}
+                className="bg-slate-900/80 border border-slate-800 hover:border-emerald-500/50 rounded-3xl p-6 space-y-5 flex flex-col justify-between transition-all group shadow-lg"
+              >
+                <div className="space-y-4">
+                  {/* Category Header */}
+                  <div className="flex items-center justify-between">
+                    <div className={`w-11 h-11 rounded-2xl bg-gradient-to-br ${cat.color} flex items-center justify-center text-white shadow-md group-hover:scale-105 transition-transform`}>
+                      <IconComp className="w-5 h-5" />
+                    </div>
+                    <span className="px-2.5 py-1 text-[10px] font-bold bg-slate-800 text-emerald-400 border border-slate-700/80 rounded-full">
+                      {cat.costLevel}
+                    </span>
+                  </div>
 
-          {/* Card 2 */}
-          <motion.div
-            whileHover={{ y: -5 }}
-            className="p-6 bg-slate-900/60 border border-slate-800 rounded-3xl space-y-4 hover:border-teal-500/50 transition-all group"
-          >
-            <div className="w-12 h-12 rounded-2xl bg-teal-500/10 text-teal-400 flex items-center justify-center border border-teal-500/20 group-hover:scale-105 transition-transform">
-              <Hammer className="w-6 h-6" />
-            </div>
-            <h4 className="text-lg font-bold text-white">Fabrication Track & CAD</h4>
-            <p className="text-xs text-slate-400 leading-relaxed">
-              Real-time 6-stage tracking from casting/3D scanning to CAD modification, carbon fiber lamination, and check socket fitting.
-            </p>
-          </motion.div>
+                  <div>
+                    <span className="text-[10px] font-bold text-emerald-400 uppercase tracking-wider block">
+                      {cat.subtitle}
+                    </span>
+                    <h3 className="text-lg font-bold text-white group-hover:text-emerald-300 transition-colors">
+                      {cat.title}
+                    </h3>
+                  </div>
 
-          {/* Card 3 */}
-          <motion.div
-            whileHover={{ y: -5 }}
-            className="p-6 bg-slate-900/60 border border-slate-800 rounded-3xl space-y-4 hover:border-indigo-500/50 transition-all group"
-          >
-            <div className="w-12 h-12 rounded-2xl bg-indigo-500/10 text-indigo-400 flex items-center justify-center border border-indigo-500/20 group-hover:scale-105 transition-transform">
-              <Footprints className="w-6 h-6" />
-            </div>
-            <h4 className="text-lg font-bold text-white">Vision Gait Deviation AI</h4>
-            <p className="text-xs text-slate-400 leading-relaxed">
-              Detect trendelenburg gait, vaulting, circumferential gait, and whip errors. Automatically updates 6-Min Walk Test and AMPPro metrics.
-            </p>
-          </motion.div>
+                  <p className="text-xs text-slate-400 leading-relaxed">
+                    {cat.description}
+                  </p>
 
-          {/* Card 4 */}
-          <motion.div
-            whileHover={{ y: -5 }}
-            className="p-6 bg-slate-900/60 border border-slate-800 rounded-3xl space-y-4 hover:border-purple-500/50 transition-all group"
-          >
-            <div className="w-12 h-12 rounded-2xl bg-purple-500/10 text-purple-400 flex items-center justify-center border border-purple-500/20 group-hover:scale-105 transition-transform">
-              <FileText className="w-6 h-6" />
-            </div>
-            <h4 className="text-lg font-bold text-white">AI SOAP Dictation</h4>
-            <p className="text-xs text-slate-400 leading-relaxed">
-              Turn verbal clinician notes into structured Subjective, Objective, Assessment, and Plan notes instantly formatted for L-Code insurance billing.
-            </p>
-          </motion.div>
+                  {/* Common Devices Chips */}
+                  <div className="space-y-2 pt-2 border-t border-slate-800/80">
+                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
+                      Common Devices Managed:
+                    </span>
+                    <div className="flex flex-wrap gap-1.5">
+                      {cat.commonDevices.slice(0, 5).map((dev, idx) => (
+                        <span key={idx} className="px-2 py-0.5 bg-slate-950 text-slate-300 text-[10px] rounded-md border border-slate-800">
+                          {dev}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
 
-          {/* Card 5 */}
-          <motion.div
-            whileHover={{ y: -5 }}
-            className="p-6 bg-slate-900/60 border border-slate-800 rounded-3xl space-y-4 hover:border-emerald-500/50 transition-all group"
-          >
-            <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center border border-emerald-500/20 group-hover:scale-105 transition-transform">
-              <Video className="w-6 h-6" />
-            </div>
-            <h4 className="text-lg font-bold text-white">Amputee Telehealth Room</h4>
-            <p className="text-xs text-slate-400 leading-relaxed">
-              Encrypted remote video consultations with integrated socket pressure telemetry and direct patient messaging.
-            </p>
-          </motion.div>
+                  {/* Materials Supported */}
+                  <div className="space-y-1.5">
+                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
+                      Materials & Components:
+                    </span>
+                    <p className="text-[11px] text-slate-300">
+                      {cat.materials.join(', ')}
+                    </p>
+                  </div>
+                </div>
 
-          {/* Card 6 */}
-          <motion.div
-            whileHover={{ y: -5 }}
-            className="p-6 bg-slate-900/60 border border-slate-800 rounded-3xl space-y-4 hover:border-amber-500/50 transition-all group"
-          >
-            <div className="w-12 h-12 rounded-2xl bg-amber-500/10 text-amber-400 flex items-center justify-center border border-amber-500/20 group-hover:scale-105 transition-transform">
-              <Lock className="w-6 h-6" />
-            </div>
-            <h4 className="text-lg font-bold text-white">Role-Based Access (RBAC)</h4>
-            <p className="text-xs text-slate-400 leading-relaxed">
-              Tailored workspace views for Prosthetists, Doctors, Physiotherapists, Receptionists, Administrators, and Patients.
-            </p>
-          </motion.div>
-
+                <button
+                  onClick={onLaunchApp}
+                  className="w-full py-2.5 bg-slate-800/80 hover:bg-emerald-600 text-xs font-semibold text-slate-200 hover:text-white rounded-xl transition-colors flex items-center justify-center gap-2 cursor-pointer mt-2"
+                >
+                  <span>Open Clinical Module</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </button>
+              </motion.div>
+            );
+          })}
         </div>
       </section>
 
-      {/* PORTFOLIO & CLINICAL BREAKTHROUGHS SECTION */}
-      <section id="portfolio" className="py-20 px-4 sm:px-8 max-w-7xl mx-auto space-y-12 border-t border-slate-800/80 relative">
+      {/* NIGERIAN CLINICAL WORKFLOW SECTION */}
+      <section id="workflow" className="py-16 px-4 sm:px-8 max-w-7xl mx-auto space-y-12 bg-slate-900/40 border-y border-slate-800/80">
+        <div className="text-center space-y-3 max-w-3xl mx-auto">
+          <div className="inline-flex items-center gap-2 px-3 py-1 bg-teal-500/10 border border-teal-500/20 text-teal-400 text-xs font-bold rounded-full">
+            <ClipboardList className="w-3.5 h-3.5" />
+            <span>End-to-End Clinical Continuity</span>
+          </div>
+          <h2 className="text-2xl sm:text-4xl font-extrabold text-white">
+            The Nigerian Clinical P&O Workflow
+          </h2>
+          <p className="text-xs sm:text-sm text-slate-400">
+            ProstheSys AI maps directly to the standard 12-stage clinical process practiced across Nigerian orthopaedic centers and private limb clinics.
+          </p>
+        </div>
+
+        {/* 12-Stage Visual Step Pipeline */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+          {NIGERIA_CLINICAL_WORKFLOW.map((wf, idx) => (
+            <motion.div
+              key={idx}
+              whileHover={{ y: -3 }}
+              className="p-4 bg-slate-950/80 border border-slate-800 hover:border-teal-500/50 rounded-2xl space-y-2 relative group transition-all"
+            >
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-extrabold text-emerald-400 bg-emerald-950/80 px-2.5 py-0.5 rounded-md border border-emerald-500/30">
+                  Step {wf.step}
+                </span>
+                {idx < 11 && (
+                  <ChevronRight className="w-4 h-4 text-slate-600 group-hover:text-teal-400 transition-colors hidden sm:block" />
+                )}
+              </div>
+              <h4 className="text-xs font-bold text-white group-hover:text-teal-300 transition-colors">
+                {wf.name}
+              </h4>
+              <p className="text-[11px] text-slate-400 leading-relaxed">
+                {wf.desc}
+              </p>
+            </motion.div>
+          ))}
+        </div>
+      </section>
+
+      {/* SERVICES TO EMPHASIZE GRID */}
+      <section id="services" className="py-16 px-4 sm:px-8 max-w-7xl mx-auto space-y-12">
+        <div className="text-center space-y-3 max-w-3xl mx-auto">
+          <div className="inline-flex items-center gap-2 px-3 py-1 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-bold rounded-full">
+            <Stethoscope className="w-3.5 h-3.5" />
+            <span>Clinical Services Focused</span>
+          </div>
+          <h2 className="text-2xl sm:text-4xl font-extrabold text-white">
+            Core Clinical Services Digitized
+          </h2>
+          <p className="text-xs sm:text-sm text-slate-400">
+            We focus on empowering clinicians to deliver high-quality patient care, thorough evaluations, and long-term device longevity.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          {[
+            { title: '1. Patient Assessment', desc: 'Demographic intake, etiology recording, vocational needs, and medical history.' },
+            { title: '2. Prosthetic Assessment', desc: 'Residual limb shape, bone length, muscle strength MMT, and weight-bearing capability.' },
+            { title: '3. Orthotic Assessment', desc: 'Joint range of motion, spasticity grading, muscle weakness, and leg length discrepancy.' },
+            { title: '4. Measurement & Casting', desc: 'Plaster wrap measurements, circumferential landmark logging, or 3D scan uploads.' },
+            { title: '5. Device Prescription', desc: 'Selecting socket design, suspension method, P&O components, and materials.' },
+            { title: '6. Fabrication Tracking', desc: '6-stage workshop tracking from positive mold carving to lamination and assembly.' },
+            { title: '7. Diagnostic Fitting', desc: 'Check-socket trials, brim relief adjustments, and pressure point inspection.' },
+            { title: '8. Bench & Dynamic Alignment', desc: 'Plumb line bench alignment, heel height adjustments, and stance tilt optimization.' },
+            { title: '9. Gait Screening & Training', desc: 'Parallel bar exercises, walking cadence analysis, TUG tests, and 6MWT distance.' },
+            { title: '10. Device Adjustment & Repair', desc: 'Rivet repairs, strap replacements, socket sock additions, and realignment.' },
+            { title: '11. Scheduled Follow-Ups', desc: '2-week, 1-month, and 6-month review logging with automated WhatsApp/SMS reminders.' },
+            { title: '12. Patient Education', desc: 'Liner cleaning, stump hygiene, sock management, and home rehabilitation exercises.' }
+          ].map((srv, idx) => (
+            <div key={idx} className="p-4 bg-slate-900/60 border border-slate-800 rounded-2xl space-y-1.5 hover:border-emerald-500/40 transition-colors">
+              <h4 className="text-xs font-bold text-emerald-300">{srv.title}</h4>
+              <p className="text-[11px] text-slate-400 leading-relaxed">{srv.desc}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* AI CLINICAL DECISION SUPPORT POSITIONING */}
+      <section className="py-12 px-4 sm:px-8 max-w-7xl mx-auto">
+        <div className="bg-gradient-to-r from-slate-900 via-emerald-950/60 to-slate-900 border border-emerald-500/30 rounded-3xl p-6 sm:p-10 space-y-6 relative overflow-hidden shadow-2xl">
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+            <div className="space-y-3 max-w-2xl">
+              <div className="inline-flex items-center gap-2 px-3 py-1 bg-emerald-500/20 text-emerald-300 text-xs font-bold rounded-full border border-emerald-400/30">
+                <Sparkles className="w-3.5 h-3.5 text-amber-300" />
+                <span>Responsible AI Decision Support</span>
+              </div>
+              <h3 className="text-xl sm:text-3xl font-extrabold text-white">
+                Clinician-First AI Assistance
+              </h3>
+              <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
+                Our Gemini AI engine supports clinicians with administrative and decision-support tasks. It never replaces the professional judgment of a certified prosthetist or orthotist.
+              </p>
+
+              {/* Mandatory Notice Banner */}
+              <div className="p-3 bg-amber-950/60 border border-amber-500/40 rounded-xl text-amber-200 text-xs font-semibold flex items-center gap-2">
+                <AlertTriangle className="w-4 h-4 text-amber-400 shrink-0" />
+                <span>"AI-generated suggestion — clinician review and verification required."</span>
+              </div>
+            </div>
+
+            <div className="space-y-2 bg-slate-950/80 p-4 rounded-2xl border border-slate-800 text-xs text-slate-300 w-full md:w-80 shrink-0">
+              <h4 className="font-bold text-emerald-400 text-xs uppercase tracking-wider">AI Support Features:</h4>
+              <ul className="space-y-1.5 text-[11px]">
+                <li className="flex items-center gap-2">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                  <span>Generate SOAP note drafts</span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                  <span>Summarize patient clinical history</span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                  <span>Identify missing assessment fields</span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                  <span>Compare measurement logs</span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                  <span>Analyze uploaded gait video screening</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* PRACTICAL NIGERIAN CLINICAL CASES */}
+      <section id="cases" className="py-16 px-4 sm:px-8 max-w-7xl mx-auto space-y-12 border-t border-slate-800/80">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
           <div className="space-y-3 max-w-xl">
-            <div className="inline-flex items-center gap-2 px-3 py-1 bg-teal-500/10 border border-teal-500/20 text-teal-400 text-xs font-bold rounded-full">
+            <div className="inline-flex items-center gap-2 px-3 py-1 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-bold rounded-full">
               <Award className="w-3.5 h-3.5" />
-              <span>Proven Amputee Outcomes</span>
+              <span>Realistic Outcomes</span>
             </div>
             <h2 className="text-2xl sm:text-4xl font-extrabold text-white">
-              Prosthetic Engineering Portfolio
+              Practical Clinical Cases Managed
             </h2>
             <p className="text-xs sm:text-sm text-slate-400">
-              Explore real-world prosthetic designs, socket CAD innovations, and measurable patient mobility improvements powered by ProstheSys AI.
+              Real-world examples of prostheses, orthoses, and repairs managed using ProstheSys AI across Nigerian rehabilitation centers.
             </p>
           </div>
 
-          {/* Filter Tabs */}
-          <div className="flex flex-wrap gap-2 bg-slate-900/80 p-1.5 border border-slate-800 rounded-2xl self-start md:self-auto">
+          {/* Category Tabs */}
+          <div className="flex flex-wrap gap-2 bg-slate-900/80 p-1.5 border border-slate-800 rounded-2xl">
             {[
-              { id: 'all', label: 'All Projects' },
-              { id: 'sockets', label: 'Socket CAD' },
-              { id: 'upper', label: 'Upper Limb' },
-              { id: 'gait', label: 'Gait Tuning' },
+              { id: 'all', label: 'All Cases' },
+              { id: 'lower', label: 'Prosthetic Legs' },
+              { id: 'orthotics', label: 'Orthotic Braces' },
               { id: 'pediatric', label: 'Pediatric' }
             ].map(tab => (
               <button
                 key={tab.id}
-                onClick={() => setPortfolioCategory(tab.id as any)}
+                onClick={() => setActiveCategoryFilter(tab.id)}
                 className={`px-3 py-1.5 text-xs font-semibold rounded-xl transition-all cursor-pointer ${
-                  portfolioCategory === tab.id
-                    ? 'bg-blue-600 text-white shadow-md'
+                  activeCategoryFilter === tab.id
+                    ? 'bg-emerald-600 text-white shadow-md'
                     : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
                 }`}
               >
@@ -641,84 +806,83 @@ export const LandingPage: React.FC<LandingPageProps> = ({
           </div>
         </div>
 
-        {/* Portfolio Cards Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <AnimatePresence mode="popLayout">
-            {filteredCaseStudies.map(item => (
-              <motion.div
-                key={item.id}
-                layout
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.95 }}
-                transition={{ duration: 0.3 }}
-                className="bg-slate-900/70 border border-slate-800 hover:border-blue-500/50 rounded-3xl overflow-hidden flex flex-col group transition-all shadow-xl"
-              >
-                {/* Card Image Banner */}
-                <div className="relative h-48 overflow-hidden bg-slate-950">
-                  <img
-                    src={item.image}
-                    alt={item.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-90 group-hover:opacity-100"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/20 to-transparent" />
-                  
-                  <span className="absolute top-3 left-3 px-3 py-1 text-[10px] font-bold bg-slate-950/80 text-blue-400 border border-slate-700/80 rounded-full backdrop-blur-md">
-                    {item.categoryLabel}
+        {/* Case Study Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {filteredCaseStudies.map((cs) => (
+            <motion.div
+              key={cs.id}
+              whileHover={{ y: -3 }}
+              className="bg-slate-900/80 border border-slate-800 hover:border-emerald-500/50 rounded-3xl p-6 space-y-4 flex flex-col justify-between group transition-all"
+            >
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="px-3 py-1 bg-emerald-950 text-emerald-300 border border-emerald-500/30 text-[10px] font-bold rounded-full">
+                    {cs.categoryLabel}
                   </span>
-
-                  {/* K-Level Badge */}
-                  <div className="absolute bottom-3 right-3 px-2.5 py-1 text-[10px] font-bold bg-teal-950/90 text-teal-300 border border-teal-500/40 rounded-lg backdrop-blur-md flex items-center gap-1">
-                    <TrendingUp className="w-3 h-3 text-teal-400" />
-                    <span>{item.kLevelAfter}</span>
-                  </div>
+                  <span className="text-[10px] text-slate-400 font-semibold flex items-center gap-1">
+                    <MapPin className="w-3 h-3 text-emerald-400" />
+                    {cs.location}
+                  </span>
                 </div>
 
-                {/* Card Body */}
-                <div className="p-6 flex-1 flex flex-col justify-between space-y-4">
-                  <div className="space-y-2">
-                    <h3 className="text-base font-bold text-white group-hover:text-blue-400 transition-colors">
-                      {item.title}
-                    </h3>
-                    <p className="text-xs text-slate-400 line-clamp-2 leading-relaxed">
-                      {item.description}
-                    </p>
-                  </div>
+                <h3 className="text-base font-bold text-white group-hover:text-emerald-300 transition-colors">
+                  {cs.title}
+                </h3>
 
-                  {/* Metrics Row */}
-                  <div className="grid grid-cols-2 gap-2 pt-2 border-t border-slate-800/80">
-                    {item.metrics.map((m, idx) => (
-                      <div key={idx} className="bg-slate-950/50 p-2 rounded-xl border border-slate-800">
-                        <span className="text-[10px] text-slate-500 font-semibold block">{m.label}</span>
-                        <span className="text-xs font-extrabold text-blue-400">{m.value}</span>
-                      </div>
+                <p className="text-xs text-slate-300 font-medium">
+                  Patient: {cs.patientProfile}
+                </p>
+
+                <p className="text-xs text-slate-400 leading-relaxed">
+                  {cs.description}
+                </p>
+
+                {/* Outcome Callout */}
+                <div className="p-3 bg-slate-950 rounded-xl border border-slate-800/80 space-y-1">
+                  <span className="text-[10px] font-bold text-emerald-400 uppercase tracking-wider block">
+                    Clinical Outcome:
+                  </span>
+                  <p className="text-xs text-slate-200">"{cs.outcome}"</p>
+                </div>
+
+                {/* Materials list */}
+                <div className="space-y-1 pt-2 border-t border-slate-800/80">
+                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
+                    Locally Available Materials Used:
+                  </span>
+                  <div className="flex flex-wrap gap-1">
+                    {cs.materialsUsed.map((mat, i) => (
+                      <span key={i} className="px-2 py-0.5 bg-slate-950 text-slate-300 text-[10px] rounded border border-slate-800">
+                        {mat}
+                      </span>
                     ))}
                   </div>
-
-                  {/* Detail Action */}
-                  <button
-                    onClick={() => setSelectedCaseStudy(item)}
-                    className="w-full py-2.5 px-4 bg-slate-800/80 hover:bg-blue-600 text-xs font-semibold text-slate-200 hover:text-white rounded-xl transition-colors flex items-center justify-center gap-2 cursor-pointer mt-2"
-                  >
-                    <span>Inspect CAD & Clinical Specs</span>
-                    <ExternalLink className="w-3.5 h-3.5" />
-                  </button>
                 </div>
-              </motion.div>
-            ))}
-          </AnimatePresence>
+              </div>
+
+              <div className="flex items-center justify-between pt-3 border-t border-slate-800 text-xs">
+                <span className="text-slate-400 font-medium">{cs.costTier}</span>
+                <button
+                  onClick={() => setSelectedCaseStudy(cs)}
+                  className="text-emerald-400 hover:text-emerald-300 font-bold flex items-center gap-1 cursor-pointer"
+                >
+                  View Case Details <ChevronRight className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            </motion.div>
+          ))}
         </div>
       </section>
 
-      {/* CASE STUDY DETAIL MODAL */}
+      {/* CASE STUDY MODAL */}
       <AnimatePresence>
         {selectedCaseStudy && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md">
             <motion.div
-              initial={{ opacity: 0, scale: 0.9, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.9, y: 20 }}
-              className="bg-slate-900 border border-slate-800 rounded-3xl max-w-2xl w-full p-6 sm:p-8 space-y-6 shadow-2xl relative overflow-hidden max-h-[90vh] overflow-y-auto"
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="bg-slate-900 border border-slate-800 rounded-3xl max-w-2xl w-full p-6 sm:p-8 space-y-6 shadow-2xl relative overflow-hidden"
             >
               <button
                 onClick={() => setSelectedCaseStudy(null)}
@@ -727,66 +891,40 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                 <X className="w-5 h-5" />
               </button>
 
-              <div className="flex items-center gap-2 text-xs font-bold text-blue-400 uppercase tracking-widest">
-                <ShieldCheck className="w-4 h-4" />
-                <span>Clinical Breakthrough Portfolio</span>
-              </div>
-
-              <div>
-                <h3 className="text-xl sm:text-2xl font-extrabold text-white">
-                  {selectedCaseStudy.title}
-                </h3>
-                <p className="text-xs text-slate-400 mt-1">
-                  {selectedCaseStudy.patientProfile}
-                </p>
-              </div>
-
-              <div className="p-4 bg-slate-950/80 border border-slate-800 rounded-2xl space-y-2">
-                <span className="text-[10px] uppercase font-bold text-teal-400 tracking-wider">
-                  Primary Clinical Outcome
+              <div className="space-y-1">
+                <span className="text-[10px] font-bold text-emerald-400 uppercase tracking-wider">
+                  Nigerian Clinical Case Record
                 </span>
-                <p className="text-xs font-medium text-slate-200 leading-relaxed">
-                  "{selectedCaseStudy.outcome}"
-                </p>
+                <h3 className="text-xl font-bold text-white">{selectedCaseStudy.title}</h3>
+                <p className="text-xs text-slate-400">{selectedCaseStudy.location}</p>
               </div>
 
-              {/* Before vs After K-Level Progression */}
-              <div className="grid grid-cols-2 gap-3">
-                <div className="p-3 bg-slate-950 rounded-xl border border-slate-800/80">
-                  <span className="text-[10px] text-slate-500 font-bold block">Baseline Mobility</span>
-                  <span className="text-xs font-semibold text-slate-300">{selectedCaseStudy.kLevelBefore}</span>
+              <div className="grid grid-cols-2 gap-3 text-xs">
+                <div className="p-3 bg-slate-950 rounded-xl border border-slate-800">
+                  <span className="text-[10px] text-slate-400 font-bold block">Status Before</span>
+                  <span className="text-slate-200 font-medium">{selectedCaseStudy.beforeStatus}</span>
                 </div>
-                <div className="p-3 bg-blue-950/40 rounded-xl border border-blue-500/30">
-                  <span className="text-[10px] text-blue-400 font-bold block">Post-ProstheSys AI</span>
-                  <span className="text-xs font-bold text-teal-300">{selectedCaseStudy.kLevelAfter}</span>
+                <div className="p-3 bg-emerald-950/60 rounded-xl border border-emerald-500/30">
+                  <span className="text-[10px] text-emerald-300 font-bold block">Status After Fitting</span>
+                  <span className="text-emerald-200 font-bold">{selectedCaseStudy.afterStatus}</span>
                 </div>
               </div>
 
-              {/* Specs & Hardware */}
-              <div className="space-y-2">
-                <h4 className="text-xs font-bold text-slate-300 uppercase tracking-wider">
-                  Engineering & Material Specifications
-                </h4>
-                <div className="flex flex-wrap gap-2">
-                  {selectedCaseStudy.specs.map((spec, i) => (
-                    <span key={i} className="px-3 py-1 bg-slate-800 text-slate-300 rounded-lg text-xs font-medium border border-slate-700/60 flex items-center gap-1.5">
-                      <CheckCircle2 className="w-3.5 h-3.5 text-teal-400" />
-                      {spec}
-                    </span>
-                  ))}
-                </div>
+              <div className="space-y-2 text-xs text-slate-300">
+                <h4 className="font-bold text-white">Full Case Summary:</h4>
+                <p className="leading-relaxed">{selectedCaseStudy.description}</p>
+                <p className="leading-relaxed text-emerald-300 font-semibold">Outcome: {selectedCaseStudy.outcome}</p>
               </div>
 
-              <div className="pt-4 border-t border-slate-800 flex items-center justify-between gap-4">
+              <div className="pt-4 border-t border-slate-800 flex justify-end">
                 <button
                   onClick={() => {
                     setSelectedCaseStudy(null);
                     onLaunchApp();
                   }}
-                  className="w-full py-3 bg-gradient-to-r from-blue-600 to-teal-500 hover:from-blue-500 hover:to-teal-400 text-white text-xs font-bold rounded-xl transition-all flex items-center justify-center gap-2 cursor-pointer shadow-lg shadow-blue-600/20"
+                  className="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-xl transition-all cursor-pointer"
                 >
-                  <span>Test Similar Workflow in Suite</span>
-                  <ArrowRight className="w-4 h-4" />
+                  Explore Clinical App
                 </button>
               </div>
             </motion.div>
@@ -794,119 +932,76 @@ export const LandingPage: React.FC<LandingPageProps> = ({
         )}
       </AnimatePresence>
 
-      {/* ABOUT US & LEADERSHIP SECTION */}
-      <section id="about" className="py-20 px-4 sm:px-8 max-w-7xl mx-auto space-y-16 border-t border-slate-800/80">
-        
-        {/* Mission Statement */}
+      {/* ABOUT US & NIGERIAN LEADERSHIP */}
+      <section id="about" className="py-16 px-4 sm:px-8 max-w-7xl mx-auto space-y-12 border-t border-slate-800/80">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-          <div className="space-y-6">
-            <div className="inline-flex items-center gap-2 px-3 py-1 bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-bold rounded-full">
+          <div className="space-y-5">
+            <div className="inline-flex items-center gap-2 px-3 py-1 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-bold rounded-full">
               <Compass className="w-3.5 h-3.5" />
-              <span>About ProstheSys Health</span>
+              <span>About ProstheSys Nigeria</span>
             </div>
             <h2 className="text-2xl sm:text-4xl font-extrabold text-white leading-tight">
-              Pioneering Zero-Friction Bionics for Every Amputee
+              Empowering Nigerian P&O Practice with Practical Technology
             </h2>
             <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
-              Founded at the intersection of clinical prosthetic care and machine learning intelligence, ProstheSys AI bridges the gap between manual socket fabrication, insurance billing rules, and physical therapy gait mechanics.
+              ProstheSys AI was developed to address the real-world operational challenges faced by Nigerian prosthetists, orthotists, and physical rehabilitation units.
             </p>
             <p className="text-xs sm:text-sm text-slate-400 leading-relaxed">
-              Our platform empowers orthotists, prosthetists, and rehab specialists across 140+ clinical branches to deliver custom bionics faster, reduce painful re-casting cycles, and maximize amputee quality of life.
+              By replacing paper charts and scattered measurement sheets with a unified digital platform, we enable clinical teams to track casting measurements, manage local material inventories, document fitting progress, and ensure long-term follow-up care for amputees and orthotic patients across Nigeria.
             </p>
 
             <div className="grid grid-cols-2 gap-4 pt-2">
               <div className="flex items-start gap-3 p-3 bg-slate-900/80 border border-slate-800 rounded-2xl">
-                <Building2 className="w-5 h-5 text-teal-400 shrink-0 mt-0.5" />
+                <Building2 className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
                 <div>
-                  <h4 className="text-xs font-bold text-white">140+ Partner Clinics</h4>
-                  <p className="text-[11px] text-slate-400">Global O&P footprint</p>
+                  <h4 className="text-xs font-bold text-white">14+ Clinic Hubs</h4>
+                  <p className="text-[11px] text-slate-400">Lagos, Abuja, Enugu, Ibadan, Kano</p>
                 </div>
               </div>
               <div className="flex items-start gap-3 p-3 bg-slate-900/80 border border-slate-800 rounded-2xl">
-                <Users className="w-5 h-5 text-blue-400 shrink-0 mt-0.5" />
+                <Users className="w-5 h-5 text-teal-400 shrink-0 mt-0.5" />
                 <div>
-                  <h4 className="text-xs font-bold text-white">28,000+ Patients</h4>
-                  <p className="text-[11px] text-slate-400">Active amputee care</p>
+                  <h4 className="text-xs font-bold text-white">Built for Clinicians</h4>
+                  <p className="text-[11px] text-slate-400">ISPO & NACOP Compliant Workflows</p>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Innovation Timeline */}
-          <div className="bg-slate-900/80 border border-slate-800 rounded-3xl p-6 sm:p-8 space-y-6 shadow-xl">
-            <h3 className="text-lg font-bold text-white flex items-center gap-2">
-              <Clock className="w-5 h-5 text-blue-400" />
-              <span>Prosthetic Innovation Timeline</span>
+          {/* Leadership Team Grid */}
+          <div className="space-y-4">
+            <h3 className="text-sm font-bold text-emerald-400 uppercase tracking-widest">
+              Nigerian Clinical Advisory & Team
             </h3>
-
-            <div className="relative pl-6 space-y-6 border-l border-slate-800">
-              {TIMELINE_MILESTONES.map((item, idx) => (
-                <div key={idx} className="relative group">
-                  <div className="absolute -left-[31px] top-1.5 w-3 h-3 bg-blue-500 rounded-full border-2 border-slate-950 group-hover:scale-125 transition-transform" />
-                  <span className="px-2 py-0.5 bg-blue-500/20 text-blue-300 text-[10px] font-extrabold rounded-md border border-blue-500/30">
-                    {item.year}
-                  </span>
-                  <h4 className="text-xs font-bold text-white mt-1">{item.title}</h4>
-                  <p className="text-[11px] text-slate-400 mt-0.5 leading-relaxed">{item.desc}</p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {NIGERIAN_LEADERSHIP_TEAM.map((lead, i) => (
+                <div key={i} className="p-4 bg-slate-900/80 border border-slate-800 rounded-2xl space-y-2">
+                  <div className="flex items-center gap-3">
+                    <img src={lead.avatar} alt={lead.name} className="w-10 h-10 rounded-xl object-cover border border-slate-700" />
+                    <div>
+                      <h4 className="text-xs font-bold text-white">{lead.name}</h4>
+                      <p className="text-[10px] text-emerald-400 font-semibold">{lead.title}</p>
+                    </div>
+                  </div>
+                  <p className="text-[11px] text-slate-400 leading-relaxed">{lead.bio}</p>
                 </div>
               ))}
             </div>
           </div>
         </div>
-
-        {/* Leadership Team Grid */}
-        <div className="space-y-8">
-          <div className="text-center space-y-2 max-w-xl mx-auto">
-            <h3 className="text-xs font-bold text-teal-400 uppercase tracking-widest">
-              Clinical & Engineering Leadership
-            </h3>
-            <h4 className="text-xl sm:text-3xl font-extrabold text-white">
-              Guided by Board-Certified Prosthetists & AI Experts
-            </h4>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {LEADERSHIP_TEAM.map((member, i) => (
-              <motion.div
-                key={i}
-                whileHover={{ y: -5 }}
-                className="bg-slate-900/60 border border-slate-800 hover:border-blue-500/40 rounded-3xl p-5 space-y-4 text-center group transition-all"
-              >
-                <img
-                  src={member.avatar}
-                  alt={member.name}
-                  className="w-20 h-20 rounded-2xl object-cover mx-auto border-2 border-slate-700 group-hover:border-blue-400 transition-colors shadow-md"
-                />
-                <div className="space-y-1">
-                  <h4 className="text-sm font-bold text-white group-hover:text-blue-400 transition-colors">
-                    {member.name}
-                  </h4>
-                  <p className="text-[11px] font-semibold text-teal-400">{member.title}</p>
-                  <span className="inline-block text-[10px] text-slate-500 font-medium">
-                    {member.credentials}
-                  </span>
-                </div>
-                <p className="text-[11px] text-slate-400 leading-relaxed border-t border-slate-800/80 pt-3">
-                  {member.bio}
-                </p>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-
       </section>
 
-      {/* INTERACTIVE ROLE SWITCHER SECTION */}
+      {/* ROLE SWITCHER SECTION */}
       <section id="roles" className="py-16 px-4 sm:px-8 max-w-7xl mx-auto space-y-8 bg-slate-900/30 border-y border-slate-800/80">
         <div className="text-center space-y-3 max-w-2xl mx-auto">
-          <h2 className="text-xs font-bold text-teal-400 uppercase tracking-widest">
-            Role-Tailored Dashboard Previews
+          <h2 className="text-xs font-bold text-emerald-400 uppercase tracking-widest">
+            Role-Based Workspaces
           </h2>
           <h3 className="text-2xl sm:text-3xl font-bold text-white">
             Experience ProstheSys as Any Team Member
           </h3>
           <p className="text-xs text-slate-400">
-            Click any profile below to launch directly into that user's customized clinical view.
+            Select a profile to launch directly into that role's customized Nigerian clinical workspace.
           </p>
         </div>
 
@@ -917,25 +1012,25 @@ export const LandingPage: React.FC<LandingPageProps> = ({
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               onClick={() => onSelectRole(usr)}
-              className="p-4 rounded-2xl bg-slate-900 border border-slate-800 hover:border-blue-500/60 cursor-pointer transition-all flex items-start gap-4 group shadow-md"
+              className="p-4 rounded-2xl bg-slate-900 border border-slate-800 hover:border-emerald-500/60 cursor-pointer transition-all flex items-start gap-4 group shadow-md"
             >
               <img
                 src={usr.avatar}
                 alt={usr.name}
-                className="w-12 h-12 rounded-xl object-cover shrink-0 border border-slate-700 group-hover:border-blue-400 transition-colors"
+                className="w-12 h-12 rounded-xl object-cover shrink-0 border border-slate-700 group-hover:border-emerald-400 transition-colors"
               />
               <div className="flex-1 min-w-0">
                 <div className="flex items-center justify-between">
-                  <h4 className="text-xs font-bold text-white truncate group-hover:text-blue-400 transition-colors">
+                  <h4 className="text-xs font-bold text-white truncate group-hover:text-emerald-400 transition-colors">
                     {usr.name}
                   </h4>
-                  <span className="px-2 py-0.5 text-[9px] font-bold bg-blue-500/20 text-blue-300 rounded-full border border-blue-500/30">
+                  <span className="px-2 py-0.5 text-[9px] font-bold bg-emerald-500/20 text-emerald-300 rounded-full border border-emerald-500/30">
                     {usr.role}
                   </span>
                 </div>
                 <p className="text-[11px] text-slate-400 truncate mt-0.5">{usr.title}</p>
-                <span className="inline-flex items-center gap-1 text-[10px] font-bold text-blue-400 mt-2 group-hover:translate-x-1 transition-transform">
-                  Launch View <ArrowRight className="w-3 h-3" />
+                <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-400 mt-2 group-hover:translate-x-1 transition-transform">
+                  Launch Workspace <ArrowRight className="w-3 h-3" />
                 </span>
               </div>
             </motion.div>
@@ -943,251 +1038,187 @@ export const LandingPage: React.FC<LandingPageProps> = ({
         </div>
       </section>
 
-      {/* CONTACT US & CLINICAL INQUIRY SECTION */}
-      <section id="contact" className="py-20 px-4 sm:px-8 max-w-7xl mx-auto space-y-12">
+      {/* CONTACT US SECTION */}
+      <section id="contact" className="py-16 px-4 sm:px-8 max-w-7xl mx-auto space-y-12">
         <div className="text-center space-y-3 max-w-2xl mx-auto">
-          <div className="inline-flex items-center gap-2 px-3 py-1 bg-teal-500/10 border border-teal-500/20 text-teal-400 text-xs font-bold rounded-full">
+          <div className="inline-flex items-center gap-2 px-3 py-1 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-bold rounded-full">
             <MessageSquare className="w-3.5 h-3.5" />
-            <span>Direct Clinical Support</span>
+            <span>Connect with Us</span>
           </div>
           <h2 className="text-2xl sm:text-4xl font-extrabold text-white">
-            Connect with Our Clinical Bionics Team
+            Get ProstheSys for Your Clinic
           </h2>
           <p className="text-xs sm:text-sm text-slate-400">
-            Have questions about integrating ProstheSys AI into your clinic, requesting a custom CAD demo, or setting up telehealth? Reach out directly.
+            Have questions about adopting ProstheSys AI in your Nigerian hospital, orthopaedic center, or rehabilitation clinic? Reach out to our team.
           </p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
           
-          {/* Contact Details & Hub Locations */}
+          {/* Contact Details */}
           <div className="lg:col-span-5 space-y-6">
             <div className="bg-slate-900/80 border border-slate-800 rounded-3xl p-6 space-y-6">
-              <h3 className="text-base font-bold text-white">Clinical Support Headquarters</h3>
+              <h3 className="text-base font-bold text-white">Nigeria Support Headquarters</h3>
               
               <div className="space-y-4 text-xs">
                 <div className="flex items-start gap-3">
-                  <MapPin className="w-4 h-4 text-blue-400 shrink-0 mt-0.5" />
+                  <MapPin className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
                   <div>
-                    <p className="font-semibold text-slate-200">Boston Bionics Innovation Center</p>
-                    <p className="text-slate-400">450 Biomedical Parkway, Suite 800, Boston, MA 02115</p>
+                    <p className="font-semibold text-slate-200">Lagos Clinical Operations Hub</p>
+                    <p className="text-slate-400">National Orthopaedic Hospital Complex, Igbobi, Lagos State, Nigeria</p>
                   </div>
                 </div>
 
                 <div className="flex items-center gap-3">
                   <Phone className="w-4 h-4 text-teal-400 shrink-0" />
                   <div>
-                    <p className="font-semibold text-slate-200">Clinical Hotline (24/7)</p>
-                    <p className="text-slate-400">+1 (800) 555-PROSTHESYS</p>
+                    <p className="font-semibold text-slate-200">Clinical Support Line</p>
+                    <p className="text-slate-400">+234 (800) 776-7843 (PROSTHESYS)</p>
                   </div>
                 </div>
 
                 <div className="flex items-center gap-3">
-                  <Mail className="w-4 h-4 text-indigo-400 shrink-0" />
+                  <Mail className="w-4 h-4 text-emerald-400 shrink-0" />
                   <div>
-                    <p className="font-semibold text-slate-200">Inquiries & EHR Integration</p>
-                    <p className="text-slate-400">clinical-support@prosthesys-ai.health</p>
+                    <p className="font-semibold text-slate-200">Email Inquiries</p>
+                    <p className="text-slate-400">support@prosthesys.ng</p>
                   </div>
                 </div>
               </div>
 
               <div className="pt-4 border-t border-slate-800 space-y-2">
-                <h4 className="text-xs font-bold text-slate-300">Global Innovation Hubs</h4>
+                <h4 className="text-xs font-bold text-slate-300">Regional Support Centers</h4>
                 <div className="grid grid-cols-2 gap-2 text-[11px] text-slate-400">
-                  <span className="p-2 bg-slate-950 rounded-xl border border-slate-800">Zurich Prosthetic Lab</span>
-                  <span className="p-2 bg-slate-950 rounded-xl border border-slate-800">Singapore O&P Hub</span>
+                  <span className="p-2 bg-slate-950 rounded-xl border border-slate-800">Abuja Hub (CBD)</span>
+                  <span className="p-2 bg-slate-950 rounded-xl border border-slate-800">Enugu Hub (Independence)</span>
+                  <span className="p-2 bg-slate-950 rounded-xl border border-slate-800">Ibadan Hub (Ring Road)</span>
+                  <span className="p-2 bg-slate-950 rounded-xl border border-slate-800">Kano P&O Center</span>
                 </div>
-              </div>
-            </div>
-
-            {/* Quick Consultation Badge */}
-            <div className="p-5 bg-gradient-to-r from-blue-900/40 to-teal-900/40 border border-blue-500/30 rounded-3xl flex items-center gap-4">
-              <div className="w-10 h-10 rounded-xl bg-blue-500/20 text-blue-400 flex items-center justify-center shrink-0">
-                <ShieldCheck className="w-6 h-6" />
-              </div>
-              <div className="text-xs">
-                <p className="font-bold text-white">HIPAA Compliant & Encrypted</p>
-                <p className="text-slate-400">All clinical communications are strictly protected by BAA protocols.</p>
               </div>
             </div>
           </div>
 
-          {/* Interactive Form */}
-          <div className="lg:col-span-7">
-            <div className="bg-slate-900/80 border border-slate-800 rounded-3xl p-6 sm:p-8 space-y-6 shadow-xl">
-              <h3 className="text-lg font-bold text-white">Send Clinical Inquiry or Request Demo</h3>
+          {/* Contact Form */}
+          <div className="lg:col-span-7 bg-slate-900/80 border border-slate-800 rounded-3xl p-6 sm:p-8 space-y-6">
+            <h3 className="text-lg font-bold text-white">Request Clinic Onboarding or Demo</h3>
 
-              {contactSubmitted ? (
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  className="p-8 bg-teal-950/40 border border-teal-500/40 rounded-2xl text-center space-y-4"
-                >
-                  <div className="w-12 h-12 bg-teal-500/20 text-teal-400 rounded-full flex items-center justify-center mx-auto">
-                    <CheckCircle2 className="w-7 h-7" />
-                  </div>
-                  <h4 className="text-lg font-bold text-white">Inquiry Received Successfully!</h4>
-                  <p className="text-xs text-slate-300 max-w-md mx-auto leading-relaxed">
-                    Thank you, <span className="font-bold text-white">{contactForm.name}</span>. Our clinical bionics specialist team will review your request and get in touch within 2 business hours.
-                  </p>
-                  <button
-                    onClick={() => {
-                      setContactSubmitted(false);
-                      setContactForm({
-                        name: '',
-                        email: '',
-                        role: 'Prosthetist / Clinician',
-                        clinic: '',
-                        interest: 'Clinical Suite Demo',
-                        message: ''
-                      });
-                    }}
-                    className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-200 rounded-xl transition-colors cursor-pointer"
-                  >
-                    Send Another Message
-                  </button>
-                </motion.div>
-              ) : (
-                <form onSubmit={handleContactSubmit} className="space-y-4">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div className="space-y-1.5">
-                      <label className="text-xs font-bold text-slate-300">Your Full Name *</label>
-                      <input
-                        type="text"
-                        required
-                        value={contactForm.name}
-                        onChange={e => setContactForm({ ...contactForm, name: e.target.value })}
-                        placeholder="Dr. Sarah Connor"
-                        className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 transition-colors"
-                      />
-                    </div>
-
-                    <div className="space-y-1.5">
-                      <label className="text-xs font-bold text-slate-300">Email Address *</label>
-                      <input
-                        type="email"
-                        required
-                        value={contactForm.email}
-                        onChange={e => setContactForm({ ...contactForm, email: e.target.value })}
-                        placeholder="s.connor@bionicsclinic.com"
-                        className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 transition-colors"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div className="space-y-1.5">
-                      <label className="text-xs font-bold text-slate-300">Clinical Role</label>
-                      <select
-                        value={contactForm.role}
-                        onChange={e => setContactForm({ ...contactForm, role: e.target.value })}
-                        className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white focus:outline-none focus:border-blue-500 transition-colors"
-                      >
-                        <option>Prosthetist / Clinician</option>
-                        <option>Orthotist</option>
-                        <option>Physical Therapist</option>
-                        <option>Clinic Director / Owner</option>
-                        <option>Amputee / Patient</option>
-                        <option>Research Partner</option>
-                      </select>
-                    </div>
-
-                    <div className="space-y-1.5">
-                      <label className="text-xs font-bold text-slate-300">Clinic / Hospital Name</label>
-                      <input
-                        type="text"
-                        value={contactForm.clinic}
-                        onChange={e => setContactForm({ ...contactForm, clinic: e.target.value })}
-                        placeholder="Apex Amputee Care Center"
-                        className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 transition-colors"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-slate-300">Primary Inquiry Area</label>
-                    <select
-                      value={contactForm.interest}
-                      onChange={e => setContactForm({ ...contactForm, interest: e.target.value })}
-                      className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white focus:outline-none focus:border-blue-500 transition-colors"
-                    >
-                      <option>Clinical Suite Demo & Onboarding</option>
-                      <option>3D Socket CAD Lamination Integration</option>
-                      <option>Gemini Component Matching Engine</option>
-                      <option>Telehealth & Gait Telemetry Setup</option>
-                      <option>Patient Consultation Referral</option>
-                    </select>
-                  </div>
-
-                  <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-slate-300">Message / Notes</label>
-                    <textarea
-                      rows={4}
-                      value={contactForm.message}
-                      onChange={e => setContactForm({ ...contactForm, message: e.target.value })}
-                      placeholder="Tell us about your clinic's patient volume, component catalog needs, or custom socket fabrication goals..."
-                      className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 transition-colors resize-none"
+            {contactSubmitted ? (
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="p-6 bg-emerald-950/60 border border-emerald-500/40 rounded-2xl text-center space-y-3">
+                <CheckCircle2 className="w-10 h-10 text-emerald-400 mx-auto" />
+                <h4 className="text-base font-bold text-white">Thank You for Contacting ProstheSys Nigeria</h4>
+                <p className="text-xs text-slate-300">
+                  Our clinical operations team in Lagos/Abuja will respond to your inquiry within 24 hours.
+                </p>
+              </motion.div>
+            ) : (
+              <form onSubmit={handleContactSubmit} className="space-y-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+                  <div>
+                    <label className="block text-slate-300 font-semibold mb-1">Your Full Name</label>
+                    <input
+                      type="text"
+                      required
+                      placeholder="e.g. Dr. Olumide Johnson"
+                      value={contactForm.name}
+                      onChange={e => setContactForm({ ...contactForm, name: e.target.value })}
+                      className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-slate-100 focus:outline-none focus:border-emerald-500"
                     />
                   </div>
+                  <div>
+                    <label className="block text-slate-300 font-semibold mb-1">Email Address</label>
+                    <input
+                      type="email"
+                      required
+                      placeholder="e.g. o.johnson@hospital.ng"
+                      value={contactForm.email}
+                      onChange={e => setContactForm({ ...contactForm, email: e.target.value })}
+                      className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-slate-100 focus:outline-none focus:border-emerald-500"
+                    />
+                  </div>
+                </div>
 
-                  <button
-                    type="submit"
-                    className="w-full py-3.5 bg-gradient-to-r from-blue-600 via-indigo-600 to-teal-500 hover:from-blue-500 hover:to-teal-400 text-white text-xs font-bold rounded-xl shadow-lg shadow-blue-600/25 transition-all flex items-center justify-center gap-2 cursor-pointer"
-                  >
-                    <Send className="w-4 h-4" />
-                    <span>Submit Inquiry</span>
-                  </button>
-                </form>
-              )}
-            </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+                  <div>
+                    <label className="block text-slate-300 font-semibold mb-1">Role in Facility</label>
+                    <select
+                      value={contactForm.role}
+                      onChange={e => setContactForm({ ...contactForm, role: e.target.value })}
+                      className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-slate-100 focus:outline-none focus:border-emerald-500"
+                    >
+                      <option>Prosthetist / Orthotist</option>
+                      <option>Physiatrist / Doctor</option>
+                      <option>Physiotherapist</option>
+                      <option>Clinic Administrator</option>
+                      <option>Patient / Caregiver</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-slate-300 font-semibold mb-1">Clinic State / Location</label>
+                    <select
+                      value={contactForm.stateLocation}
+                      onChange={e => setContactForm({ ...contactForm, stateLocation: e.target.value })}
+                      className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-slate-100 focus:outline-none focus:border-emerald-500"
+                    >
+                      <option>Lagos</option>
+                      <option>Abuja (FCT)</option>
+                      <option>Enugu</option>
+                      <option>Oyo (Ibadan)</option>
+                      <option>Kano</option>
+                      <option>Rivers (Port Harcourt)</option>
+                      <option>Kaduna</option>
+                      <option>Edo (Benin)</option>
+                      <option>Other State</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div className="text-xs">
+                  <label className="block text-slate-300 font-semibold mb-1">Clinic / Facility Name</label>
+                  <input
+                    type="text"
+                    placeholder="e.g. Federal Medical Centre P&O Department"
+                    value={contactForm.facility}
+                    onChange={e => setContactForm({ ...contactForm, facility: e.target.value })}
+                    className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-slate-100 focus:outline-none focus:border-emerald-500"
+                  />
+                </div>
+
+                <div className="text-xs">
+                  <label className="block text-slate-300 font-semibold mb-1">Message / Clinical Needs</label>
+                  <textarea
+                    rows={3}
+                    placeholder="Tell us about your clinic workflow needs or questions..."
+                    value={contactForm.message}
+                    onChange={e => setContactForm({ ...contactForm, message: e.target.value })}
+                    className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-slate-100 focus:outline-none focus:border-emerald-500"
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  className="w-full py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl transition-all shadow-lg shadow-emerald-600/20 flex items-center justify-center gap-2 cursor-pointer"
+                >
+                  <Send className="w-4 h-4" />
+                  <span>Submit Inquiry</span>
+                </button>
+              </form>
+            )}
           </div>
 
         </div>
       </section>
 
-      {/* FINAL CALL TO ACTION */}
-      <section className="py-20 px-4 sm:px-8 max-w-5xl mx-auto text-center space-y-8">
-        <motion.div
-          whileHover={{ scale: 1.01 }}
-          className="p-8 sm:p-12 rounded-3xl bg-gradient-to-r from-blue-900 via-indigo-950 to-slate-900 border border-blue-800/50 shadow-2xl space-y-6 relative overflow-hidden"
-        >
-          <div className="absolute top-0 right-0 w-80 h-80 bg-blue-500/10 rounded-full blur-3xl pointer-events-none" />
-          
-          <div className="space-y-3">
-            <span className="px-3 py-1 bg-blue-500/20 text-blue-300 text-xs font-bold rounded-full border border-blue-400/30 uppercase tracking-wider">
-              Get Started Instantly
-            </span>
-            <h2 className="text-2xl sm:text-4xl font-extrabold text-white">
-              Ready to Upgrade Amputee Care Precision?
-            </h2>
-            <p className="text-xs sm:text-sm text-slate-300 max-w-xl mx-auto">
-              Access the complete ProstheSys AI Clinical Suite right now with loaded demo patients, fabrication workflows, and gait telemetry.
-            </p>
-          </div>
-
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-2">
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={onLaunchApp}
-              className="w-full sm:w-auto px-10 py-4 text-sm font-bold text-slate-950 bg-white hover:bg-slate-100 rounded-2xl shadow-xl transition-all flex items-center justify-center gap-2 cursor-pointer"
-            >
-              <ShieldCheck className="w-5 h-5 text-blue-600" />
-              <span>Enter Clinical Suite</span>
-            </motion.button>
-          </div>
-        </motion.div>
-      </section>
-
       {/* FOOTER */}
-      <footer className="border-t border-slate-900 bg-slate-950 px-4 sm:px-8 py-8 text-xs text-slate-500">
-        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
+      <footer className="mt-auto border-t border-slate-800/80 bg-slate-950 py-8 px-4 sm:px-8 text-xs text-slate-400">
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
-            <ShieldCheck className="w-5 h-5 text-blue-500" />
-            <span className="font-bold text-slate-300">ProstheSys AI Clinical Systems</span>
-            <span className="hidden md:inline">• HIPAA Compliant EHR & Bionics Ecosystem</span>
+            <ShieldCheck className="w-5 h-5 text-emerald-400" />
+            <span className="font-bold text-white">ProstheSys AI Nigeria</span>
+            <span className="text-slate-500">| Digital Clinical Management for Prosthetics & Orthotics</span>
           </div>
-          <p>© {new Date().getFullYear()} ProstheSys Healthcare Inc. All rights reserved.</p>
+          <p className="text-[11px] text-slate-500 text-center md:text-right">
+            © {new Date().getFullYear()} ProstheSys Health Nigeria. Designed for Nigerian P&O clinical practice.
+          </p>
         </div>
       </footer>
 

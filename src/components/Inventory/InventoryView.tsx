@@ -33,7 +33,7 @@ export const InventoryView: React.FC<InventoryViewProps> = ({
             <h1 className="text-lg font-bold">Prosthetics & Orthotics Inventory Management</h1>
           </div>
           <p className="text-xs text-slate-300 mt-1">
-            Tracking stock levels for carbon feet, microprocessor knees, liners & pylons
+            Tracking clinical stock levels for SACH feet, mechanical knees, polypropylene sheets, liners & pylons
           </p>
         </div>
       </div>
@@ -56,8 +56,9 @@ export const InventoryView: React.FC<InventoryViewProps> = ({
           className="bg-slate-50 border border-slate-200 rounded-xl p-2 focus:outline-none font-medium text-slate-700"
         >
           <option value="ALL">All Component Categories</option>
-          <option value="Feet">Carbon Feet</option>
-          <option value="Knees">Microprocessor Knees</option>
+          <option value="Feet">Prosthetic Feet (SACH / Single-Axis)</option>
+          <option value="Knees">Mechanical & Friction Knees</option>
+          <option value="Sockets">Polypropylene & Resins</option>
           <option value="Liners">Liners & Gel Sleeves</option>
           <option value="Pylons & Adapters">Pylons & Adapters</option>
         </select>
@@ -92,7 +93,7 @@ export const InventoryView: React.FC<InventoryViewProps> = ({
                 </div>
                 <div className="text-right">
                   <span className="text-slate-400 text-[10px] block font-medium">Unit Cost</span>
-                  <span className="text-xs font-bold text-slate-800">${item.unitCostUsd.toLocaleString()}</span>
+                  <span className="text-xs font-bold text-slate-800">₦{item.unitCostUsd.toLocaleString()}</span>
                 </div>
               </div>
 

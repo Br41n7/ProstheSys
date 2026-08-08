@@ -15,63 +15,63 @@ export interface AuthUser {
 export const PRESET_USERS: AuthUser[] = [
   {
     id: 'usr-1',
-    name: 'Dr. Marcus Vance, CPO',
-    email: 'marcus.vance@prosthesys.clinic',
+    name: 'Dr. Chinedu Okafor, CPO',
+    email: 'chinedu.okafor@prosthesys.ng',
     role: 'Prosthetist',
     avatar: 'https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=150&auto=format&fit=crop&q=80',
-    title: 'Chief Certified Prosthetist Orthotist',
-    clinicName: 'ProstheSys Central Rehabilitation Clinic',
-    specialty: 'Lower Limb Bionics & Socket Design'
+    title: 'Lead Certified Prosthetist Orthotist',
+    clinicName: 'Lagos National Orthopaedic Hospital Clinic',
+    specialty: 'Lower Limb Prosthetics & Socket Casting'
   },
   {
     id: 'usr-2',
-    name: 'Dr. Sarah Jenkins, MD',
-    email: 'sarah.jenkins@prosthesys.clinic',
+    name: 'Dr. Amina Bello, MD',
+    email: 'amina.bello@prosthesys.ng',
     role: 'Doctor',
     avatar: 'https://images.unsplash.com/photo-1594824813566-88855ce78961?w=150&auto=format&fit=crop&q=80',
     title: 'Consultant Physiatrist & Amputee Care Lead',
-    clinicName: 'ProstheSys Central Rehabilitation Clinic',
+    clinicName: 'Abuja Rehabilitation & Prosthetics Hub',
     specialty: 'Physical Medicine & Rehabilitation'
   },
   {
     id: 'usr-3',
-    name: 'Elena Rostova, DPT',
-    email: 'elena.rostova@prosthesys.clinic',
+    name: 'Folake Adebayo, PT',
+    email: 'folake.adebayo@prosthesys.ng',
     role: 'Physiotherapist',
     avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&auto=format&fit=crop&q=80',
-    title: 'Senior Amputee Gait & Mobility Therapist',
-    clinicName: 'ProstheSys Central Rehabilitation Clinic',
-    specialty: 'Gait Retraining & AMPPro Mobility'
+    title: 'Senior Amputee Gait & Rehabilitation Therapist',
+    clinicName: 'Ibadan Physical Medicine & Limb Lab',
+    specialty: 'Gait Retraining & Functional Training'
   },
   {
     id: 'usr-4',
-    name: 'Rachel Green',
-    email: 'rachel.green@prosthesys.clinic',
+    name: 'Babatunde Adeleke',
+    email: 'babatunde.a@prosthesys.ng',
     role: 'Receptionist',
-    avatar: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=150&auto=format&fit=crop&q=80',
-    title: 'Clinic Operations & Intake Manager',
-    clinicName: 'ProstheSys Central Rehabilitation Clinic',
-    specialty: 'Patient Scheduling & Insurance Billing'
+    avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80',
+    title: 'Clinic Operations & Patient Intake Manager',
+    clinicName: 'Enugu P&O Care & Orthotics Center',
+    specialty: 'Patient Appointments & Billing Administration'
   },
   {
     id: 'usr-5',
-    name: 'James Chen',
-    email: 'admin@prosthesys.clinic',
+    name: 'Kofi Mensah',
+    email: 'admin@prosthesys.ng',
     role: 'Admin',
     avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
-    title: 'Director of Clinical Systems & Operations',
-    clinicName: 'ProstheSys Global Healthcare',
-    specialty: 'System Administration & Multi-Clinic Compliance'
+    title: 'Director of Clinical Operations & Compliance',
+    clinicName: 'ProstheSys Health Nigeria Network',
+    specialty: 'Multi-Clinic Operations & Resource Management'
   },
   {
     id: 'usr-6',
-    name: 'John Doe',
-    email: 'john.doe@gmail.com',
+    name: 'Emeka Nnamdi',
+    email: 'emeka.nnamdi@gmail.com',
     role: 'Patient',
-    avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80',
-    title: 'Patient (MRN-8821)',
-    clinicName: 'ProstheSys Central Rehabilitation Clinic',
-    patientId: 'pat-101'
+    avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&auto=format&fit=crop&q=80',
+    title: 'Patient (MRN-NG-2026-0814)',
+    clinicName: 'Lagos National Orthopaedic Hospital Clinic',
+    patientId: 'pat-001'
   }
 ];
 

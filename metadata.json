@@ -1,6 +1,6 @@
 {
-  "name": "ProstheSys AI",
-  "description": "AI-powered Prosthetics & Orthotics Clinic Management Platform with digitized clinical workflows, AI SOAP generator, device recommendations, gait analysis, fabrication tracking, and telehealth.",
+  "name": "ProstheSys AI Nigeria",
+  "description": "Digital clinical management platform for Prosthetics & Orthotics (P&O) practice in Nigeria. Manage patients, assessments, casting, fabrication, fitting, alignment, gait training, and follow-ups.",
   "requestFramePermissions": ["camera", "microphone"],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

@@ -23,7 +23,7 @@ export const BillingView: React.FC<BillingViewProps> = ({ invoices = [] }) => {
             <h1 className="text-lg font-bold">Billing, Claims & Invoices Ledger</h1>
           </div>
           <p className="text-xs text-slate-300 mt-1">
-            Tracking HCPCS coding, insurance reimbursements & patient co-pays
+            Tracking clinical coding, NHIS / HMO reimbursements & out-of-pocket payments
           </p>
         </div>
       </div>
@@ -32,20 +32,20 @@ export const BillingView: React.FC<BillingViewProps> = ({ invoices = [] }) => {
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
         <div className="p-4 bg-white rounded-2xl border border-slate-200 shadow-sm">
           <span className="text-slate-400 font-medium text-[10px] block uppercase">Total Billed Volume</span>
-          <span className="text-2xl font-bold text-slate-900 mt-1 block">${totalBilled.toLocaleString()}</span>
-          <span className="text-slate-500 text-[10px]">HCPCS L-code items</span>
+          <span className="text-2xl font-bold text-slate-900 mt-1 block">₦{totalBilled.toLocaleString()}</span>
+          <span className="text-slate-500 text-[10px]">Clinical device & service items</span>
         </div>
 
         <div className="p-4 bg-white rounded-2xl border border-slate-200 shadow-sm">
-          <span className="text-slate-400 font-medium text-[10px] block uppercase">Insurance Reimbursements</span>
-          <span className="text-2xl font-bold text-emerald-600 mt-1 block">${totalInsurance.toLocaleString()}</span>
-          <span className="text-emerald-700 text-[10px]">Commercial & VA claims</span>
+          <span className="text-slate-400 font-medium text-[10px] block uppercase">NHIS / HMO Cover</span>
+          <span className="text-2xl font-bold text-emerald-600 mt-1 block">₦{totalInsurance.toLocaleString()}</span>
+          <span className="text-emerald-700 text-[10px]">HMO & government scheme claims</span>
         </div>
 
         <div className="p-4 bg-white rounded-2xl border border-slate-200 shadow-sm">
           <span className="text-slate-400 font-medium text-[10px] block uppercase">Patient Out-of-Pocket</span>
-          <span className="text-2xl font-bold text-blue-600 mt-1 block">${totalPatientPay.toLocaleString()}</span>
-          <span className="text-blue-700 text-[10px]">Co-pay & deductibles</span>
+          <span className="text-2xl font-bold text-blue-600 mt-1 block">₦{totalPatientPay.toLocaleString()}</span>
+          <span className="text-blue-700 text-[10px]">Co-pay & direct patient balance</span>
         </div>
       </div>
 
@@ -80,9 +80,9 @@ export const BillingView: React.FC<BillingViewProps> = ({ invoices = [] }) => {
               <table className="w-full min-w-[450px] text-left">
                 <thead className="bg-slate-50 text-slate-700 font-bold border-b border-slate-200">
                   <tr>
-                    <th className="p-2.5">HCPCS Code</th>
+                    <th className="p-2.5">Code</th>
                     <th className="p-2.5">Item Description</th>
-                    <th className="p-2.5 text-right">Amount ($)</th>
+                    <th className="p-2.5 text-right">Amount (₦)</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">
@@ -90,7 +90,7 @@ export const BillingView: React.FC<BillingViewProps> = ({ invoices = [] }) => {
                     <tr key={idx}>
                       <td className="p-2.5 font-mono text-blue-700 font-semibold">{item.code}</td>
                       <td className="p-2.5 text-slate-800">{item.description}</td>
-                      <td className="p-2.5 text-right font-bold text-slate-900">${item.cost.toLocaleString()}</td>
+                      <td className="p-2.5 text-right font-bold text-slate-900">₦{item.cost.toLocaleString()}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -99,16 +99,16 @@ export const BillingView: React.FC<BillingViewProps> = ({ invoices = [] }) => {
 
             <div className="flex items-center justify-end gap-6 text-xs pt-2">
               <div>
-                <span className="text-slate-400 block text-[10px]">Insurance Covered:</span>
-                <span className="font-bold text-emerald-600">${inv.insuranceCoveredAmount.toLocaleString()}</span>
+                <span className="text-slate-400 block text-[10px]">Insurance / HMO Covered:</span>
+                <span className="font-bold text-emerald-600">₦{inv.insuranceCoveredAmount.toLocaleString()}</span>
               </div>
               <div>
                 <span className="text-slate-400 block text-[10px]">Patient Balance:</span>
-                <span className="font-bold text-slate-900">${inv.patientPayAmount.toLocaleString()}</span>
+                <span className="font-bold text-slate-900">₦{inv.patientPayAmount.toLocaleString()}</span>
               </div>
               <div className="pl-4 border-l border-slate-200">
                 <span className="text-slate-400 block text-[10px]">Total Invoice:</span>
-                <span className="font-bold text-blue-900 text-sm">${inv.totalAmount.toLocaleString()}</span>
+                <span className="font-bold text-blue-900 text-sm">₦{inv.totalAmount.toLocaleString()}</span>
               </div>
             </div>
 
